@@ -1,0 +1,11 @@
+.RightSide {
+    &Wrapper {
+        display: flex;
+        flex-direction: row;
+    }
+
+    &Greeting {
+        align-content: center;
+        margin-right: 20px;
+    }
+}

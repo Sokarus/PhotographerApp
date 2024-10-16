@@ -10,6 +10,9 @@ RUN npm install
 
 COPY . ./
 
-RUN npm run build
+ENV CHOKIDAR_USEPOLLING=true
+ENV WATCHPACK_POLLING=true
+
+# RUN npm run build
 
 CMD ["npm", "start"]

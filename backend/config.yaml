@@ -1,0 +1,9 @@
+database:
+  host: "postgres"
+  port: 5432
+  user: "postgres"
+  password: "secret"
+  dbname: "photographer"
+  sslmode: "disable"
+auth:
+  jwtKey: "secret"

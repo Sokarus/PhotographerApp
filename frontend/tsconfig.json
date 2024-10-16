@@ -17,10 +17,11 @@
     "jsx": "react-jsx",
     "baseUrl": "./src",
     "paths": {
-      "@shared/*": ["components/shared/*"],
-      "@components/*": ["components/*"],
+      "@shared": ["components/shared"],
+      "@components": ["components"],
       "@state/*": ["state/*"],
       "@enum/*": ["enum/*"],
+      "@api/*": ["api/*"],
     }
   },
   "include": ["src"]

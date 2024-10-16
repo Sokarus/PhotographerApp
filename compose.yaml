@@ -3,17 +3,11 @@ version: '3.8'
 services:
   backend:
     build:
-      context: .
+      context: ./backend
       dockerfile: Dockerfile
     container_name: backend
     ports:
       - "8080:8080"
-    environment:
-      - DB_HOST=postgres
-      - DB_PORT=5432
-      - DB_USER=postgres
-      - DB_PASSWORD=secret
-      - DB_NAME=photographer_db
     depends_on:
       - postgres
     networks:
@@ -25,13 +19,15 @@ services:
       dockerfile: Dockerfile
     container_name: frontend
     volumes:
-      - ./frontend/:/app
+      - ./frontend/:/app:delegated
+      - /app/node_modules
     ports:
       - "3000:3000"
     networks:
       - app-network
     environment:
       - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
 
   nginx:
     build: ./nginx
@@ -44,6 +40,7 @@ services:
       - app-network
     depends_on:
       - backend
+      - frontend
 
   postgres:
     image: postgres:14
@@ -51,9 +48,9 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: secret
-      POSTGRES_DB: photographer
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_DB: ${DB_NAME}
     volumes:
       - pgdata:/var/lib/postgresql/data
     networks:

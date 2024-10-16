@@ -1,9 +1,9 @@
 import {configureStore} from '@reduxjs/toolkit';
-import {pageSlice} from './Page';
+import {userSlice} from './User';
 
 const store = configureStore({
   reducer: {
-    page: pageSlice.reducer,
+    user: userSlice.reducer,
   },
 });
 

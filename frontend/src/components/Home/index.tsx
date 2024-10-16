@@ -1,15 +1,13 @@
 import React from 'react';
+import {Header} from '@components';
 
-interface IHome {
+const Home: React.FC = () => {
+  return (
+    <div>
+      <Header />
+      {'Work in progressasdas'}
+    </div>
+  );
+};
 
-}
-
-const Home: React.FC<IHome> = ({}) => {
-    return (
-        <div>
-            {'Work in progress'}
-        </div>
-    )
-} 
-
-export default Home;
+export {Home};
