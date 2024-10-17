@@ -1,44 +1,51 @@
 import React from 'react';
 import {useDispatch} from 'react-redux';
+import {toast} from 'react-toastify';
 import {Modal, InputText, Text, Button} from '@shared';
 import {setLogin as setLoginState, setRoles} from '@state/User';
 import {Login, UserData} from '@api/User';
+import {BaseModal} from '@type/modal';
+import {ValidateLogin, ValidatePassword} from '@utils/validator';
 import './LoginModal.scss';
 
-interface ILoginModal {
-  isOpened: boolean;
-  onClose: () => void;
-}
+interface ILoginModal extends BaseModal {}
 
 const LoginModal: React.FC<ILoginModal> = ({isOpened, onClose}) => {
   const dispatch = useDispatch();
   const [login, setLogin] = React.useState<string>('');
   const [password, setPassword] = React.useState<string>('');
 
-  const loginHandler = React.useCallback(() => {
-    Login(login, password)
-      .then((responce) => {
-        if (responce.status !== 200) {
-          return;
-        }
+  const validateAuth = React.useCallback(() => {
+    if (!ValidateLogin(login)) {
+      toast.error('Слишком короткий логин!');
+      return false;
+    }
+    if (!ValidatePassword(password)) {
+      toast.error('Пароль не соответствует требованиям!');
+      return false;
+    }
 
-        UserData()
-          .then(async (responce) => {
-            if (responce.status !== 200) {
-              return;
-            }
+    return true;
+  }, [login, password]);
 
-            const data = await responce.json();
+  const loginHandler = React.useCallback(async () => {
+    if (!validateAuth()) {
+      return;
+    }
 
-            dispatch(setLoginState(data.login));
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    try {
+      await Login(login, password);
+      onClose();
+      try {
+        const userData = await UserData();
+        dispatch(setLoginState(userData.login));
+        dispatch(setRoles(userData.roles));
+      } catch (error) {
+        toast.error((error as Error).message);
+      }
+    } catch (error) {
+      toast.error((error as Error).message);
+    }
   }, [login, password]);
 
   return (

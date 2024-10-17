@@ -2,6 +2,7 @@ package user
 
 import (
 	"database/sql"
+	"encoding/json"
 	"log"
 	"time"
 
@@ -11,10 +12,11 @@ import (
 )
 
 type User struct {
-	ID       int    `json:"id"`
-	Login    string `json:"login"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	ID       int      `json:"id"`
+	Login    string   `json:"login"`
+	Email    string   `json:"email"`
+	Password string   `json:"password"`
+	Roles    []string `json:"roles"`
 }
 
 type Claims struct {
@@ -61,13 +63,19 @@ func (u *User) CheckPassword(password string) bool {
 }
 
 func (u *User) DoLogin(db *sql.DB, jwtKey []byte) (string, string) {
-	var err error
+	var login string
 
-	query := "select id from users where login = $1"
-	_, err = db.Exec(query, u.Login)
+	query := "select login from users where login = $1"
+	err := db.QueryRow(query, u.Login).Scan(&login)
 
 	if err != nil {
-		return "", "User not exist"
+		if err == sql.ErrNoRows {
+			log.Println("Db error, user with login " + login + " are not exist")
+			return "", "User not exist"
+		} else {
+			log.Println("Db error:", err)
+			return "", "Db request error"
+		}
 	}
 
 	if !u.CheckPassword(u.Password) {
@@ -96,24 +104,31 @@ func (u *User) Auth(db *sql.DB, jwtKey []byte) (string, string) {
 	return tokenString, ""
 }
 
-func Data(db *sql.DB, login string) (map[string]string, string) {
+func Data(db *sql.DB, login string) (map[string]interface{}, string) {
 	var user User
+	var rolesBytes []byte
 
-	query := "select email, login from users where login = $1"
-	err := db.QueryRow(query, login).Scan(&user.Email, &user.Login)
+	query := "select email, login, roles from users where login = $1"
+	err := db.QueryRow(query, login).Scan(&user.Email, &user.Login, &rolesBytes)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
 			log.Println("Db error, user with login " + login + " are not exist")
-			return make(map[string]string), "User not exist"
+			return nil, "User not exist"
 		} else {
 			log.Println("Db error:", err)
-			return make(map[string]string), "Db request error"
+			return nil, "Db request error"
 		}
 	}
 
-	return map[string]string{
+	if err := json.Unmarshal(rolesBytes, &user.Roles); err != nil {
+		log.Println("Parse roles from db error:", err)
+		return nil, "Cant parse roles from db"
+	}
+
+	return map[string]interface{}{
 		"login": user.Login,
 		"email": user.Email,
+		"roles": user.Roles,
 	}, ""
 }

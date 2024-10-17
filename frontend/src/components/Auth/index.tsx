@@ -1,30 +1,12 @@
 import React, {ReactElement} from 'react';
-import {useDispatch} from 'react-redux';
-import {setLogin} from '@state/User';
-import {UserData} from '@api/User';
+import useAuth from '@hook/Auth';
 
 interface IAuth {
   children: ReactElement[] | ReactElement;
 }
 
 const Auth: React.FC<IAuth> = ({children}) => {
-  const dispatch = useDispatch();
-
-  React.useEffect(() => {
-    UserData()
-      .then(async (responce) => {
-        if (responce.status !== 200) {
-          return;
-        }
-
-        const data = await responce.json();
-
-        dispatch(setLogin(data.login));
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }, []);
+  useAuth();
 
   return <>{children}</>;
 };

@@ -7,3 +7,9 @@ database:
   sslmode: "disable"
 auth:
   jwtKey: "secret"
+s3_cloud:
+  url: "https://storage.yandexcloud.net/"
+  key_id: "secret"
+  access_key: "secret"
+  region: "ru-central1"
+  bucket: "kocherovaphoto"

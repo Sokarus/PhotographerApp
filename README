@@ -7,3 +7,6 @@ migrate create -ext sql -dir migrations -seq create_users_table
 
 migrate -path ./migrations -database "postgres://postgres:secret@localhost:5432/photographer?sslmode=disable" up
 migrate -path ./migrations -database "postgres://postgres:secret@localhost:5432/photographer?sslmode=disable" force 1
+migrate -path ./migrations -database "postgres://postgres:secret@localhost:5432/photographer?sslmode=disable" drop
+
+docker exec -ti -u postgres postgres psql

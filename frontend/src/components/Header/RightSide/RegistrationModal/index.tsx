@@ -1,14 +1,14 @@
 import React from 'react';
 import {useDispatch} from 'react-redux';
+import {toast} from 'react-toastify';
 import {Modal, InputText, Text, Button} from '@shared';
 import {setLogin as setLoginState, setRoles} from '@state/User';
 import {Registration, UserData} from '@api/User';
+import {BaseModal} from '@type/modal';
+import {ValidateLogin, ValidateEmail, ValidatePassword} from '@utils/validator';
 import './RegistrationModal.scss';
 
-interface IRegistrationModal {
-  isOpened: boolean;
-  onClose: () => void;
-}
+interface IRegistrationModal extends BaseModal {}
 
 const RegistrationModal: React.FC<IRegistrationModal> = ({isOpened, onClose}) => {
   const dispatch = useDispatch();
@@ -16,30 +16,41 @@ const RegistrationModal: React.FC<IRegistrationModal> = ({isOpened, onClose}) =>
   const [email, setEmail] = React.useState<string>('');
   const [password, setPassword] = React.useState<string>('');
 
-  const registrationHandler = React.useCallback(() => {
-    onClose();
-    
-    Registration(login, email, password)
-      .then((responce) => {
-        if (responce.status !== 201) {
-          return;
-        }
+  const validateRegistration = React.useCallback(() => {
+    if (!ValidateLogin(login)) {
+      toast.error('Слишком короткий логин!');
+      return false;
+    }
+    if (!ValidatePassword(password)) {
+      toast.error('Пароль не соответствует требованиям!');
+      return false;
+    }
+    if (!ValidateEmail(email)) {
+      toast.error('Невалидный email!');
+      return false;
+    }
 
-        UserData().then(async (responce) => {
-          if (responce.status !== 200) {
-            return;
-          }
+    return true;
+  }, [login, password]);
 
-          const data = await responce.json();
+  const registrationHandler = React.useCallback(async () => {
+    if (!validateRegistration()) {
+      return;
+    }
 
-          dispatch(setLoginState(data.login));
-        }).catch((error) => {
-          console.log(error);
-        });
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    try {
+      toast.success(await Registration(login, email, password));
+      onClose();
+      try {
+        const userData = await UserData();
+        dispatch(setLoginState(userData.login));
+        dispatch(setRoles(userData.roles));
+      } catch (error) {
+        toast.error((error as Error).message);
+      }
+    } catch (error) {
+      toast.error((error as Error).message);
+    }
   }, [login, email, password]);
 
   return (

@@ -21,7 +21,10 @@
       "@components": ["components"],
       "@state/*": ["state/*"],
       "@enum/*": ["enum/*"],
+      "@type/*": ["type/*"],
       "@api/*": ["api/*"],
+      "@hook/*": ["hook/*"],
+      "@utils/*": ["utils/*"],
     }
   },
   "include": ["src"]

@@ -2,7 +2,6 @@ import React from 'react';
 import {useSelector} from 'react-redux';
 import {TextLink} from '@shared';
 import {RootState} from '@state/index';
-import {Role} from '@enum/User';
 import './LeftSide.scss';
 
 const LeftSide: React.FC = () => {
@@ -14,7 +13,7 @@ const LeftSide: React.FC = () => {
       <TextLink text={'Цены'} url={'/price'} />
       <TextLink text={'Оставить заявку'} url={'/ticket'} />
       <TextLink text={'Обо мне'} url={'/about'} />
-      {roles.includes(Role.admin) ? <TextLink text={'Администрирование'} url={'/admin'} /> : <></>}
+      {roles.includes('admin') ? <TextLink text={'Администрирование'} url={'/admin'} /> : <></>}
     </div>
   );
 };

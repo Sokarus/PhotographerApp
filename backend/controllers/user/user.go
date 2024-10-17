@@ -26,7 +26,7 @@ func Login(c *gin.Context, db *sql.DB, jwtKey []byte) {
 		Password: json.Password,
 	}
 
-	token, err := user.Auth(db, jwtKey)
+	token, err := user.DoLogin(db, jwtKey)
 
 	switch err {
 	case "User not exist":
@@ -36,6 +36,9 @@ func Login(c *gin.Context, db *sql.DB, jwtKey []byte) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Неверный пароль."})
 		return
 	case "Coudnt make token":
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Ошибка, попробуйте позже."})
+		return
+	case "Db request error":
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Ошибка, попробуйте позже."})
 		return
 	}
@@ -88,6 +91,9 @@ func Registration(c *gin.Context, db *sql.DB, jwtKey []byte) {
 	case "Hash password error":
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Ошибка, попробуйте позже."})
 		return
+	case "Cant parse roles from db":
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Ошибка, попробуйте позже."})
+		return
 	}
 
 	c.SetCookie(
@@ -131,5 +137,5 @@ func Data(c *gin.Context, db *sql.DB) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"login": userData["login"]})
+	c.JSON(http.StatusOK, gin.H{"login": userData["login"], "roles": userData["roles"]})
 }

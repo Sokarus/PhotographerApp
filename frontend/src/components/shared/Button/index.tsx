@@ -1,9 +1,9 @@
-import React, {ReactElement} from 'react';
+import React, {ReactNode} from 'react';
 import './Button.scss';
 
 interface IButton {
   onClick: () => void;
-  children: ReactElement[] | ReactElement;
+  children: ReactNode;
 }
 
 const Button: React.FC<IButton> = ({onClick, children}) => {
