@@ -39,9 +39,8 @@ const Portfolio: React.FC = () => {
     <>
       <Header />
       <div className={'PortfolioWrapper'}>
-        <div>{'Work in progressasdas'}</div>
+        <div className={'PortfolioContent'}>{'Work in progressasdas'}</div>
       </div>
-      <div>{'asdasdasdasdasd'}</div>
     </>
   );
 };

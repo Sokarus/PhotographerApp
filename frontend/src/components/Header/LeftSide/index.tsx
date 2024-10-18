@@ -9,11 +9,15 @@ const LeftSide: React.FC = () => {
 
   return (
     <div className={'LeftSideWrapper'}>
-      <TextLink text={'Портфолио'} url={'/portfolio'} />
-      <TextLink text={'Цены'} url={'/price'} />
-      <TextLink text={'Оставить заявку'} url={'/ticket'} />
-      <TextLink text={'Обо мне'} url={'/about'} />
-      {roles.includes('admin') ? <TextLink text={'Администрирование'} url={'/admin'} /> : <></>}
+      <TextLink text={'Портфолио'} url={'/portfolio'} textSize={'large'} />
+      <TextLink text={'Цены'} url={'/price'} textSize={'large'} />
+      <TextLink text={'Оставить заявку'} url={'/ticket'} textSize={'large'} />
+      <TextLink text={'Обо мне'} url={'/about'} textSize={'large'} />
+      {roles.includes('admin') ? (
+        <TextLink text={'Администрирование'} url={'/admin'} textSize={'large'} />
+      ) : (
+        <></>
+      )}
     </div>
   );
 };

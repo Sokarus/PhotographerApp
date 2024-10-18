@@ -1,0 +1,56 @@
+.CreatePhotosession {
+  &Modal {
+    &Wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      padding-bottom: 20px;
+      width: 80vw;
+    }
+
+    &Input {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    &Preview {
+      &Wrapper {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        gap: 5px;
+      }
+
+      &Image {
+        &Wrapper {
+          position: relative;
+          background-color: rgba(181, 170, 170, 0.637);
+          border-radius: 10px;
+
+          img {
+            object-fit: contain;
+            height: 150px;
+            width: auto;
+            margin: 5px;
+            border-radius: 30px;
+          }
+        }
+
+        &Number {
+          background-color: red;
+          width: fit-content;
+          height: fit-content;
+          padding: 5px;
+          position: absolute;
+        }
+      }
+    }
+  }
+
+  div {
+    display: flex;
+    flex-direction: column;
+  }
+}

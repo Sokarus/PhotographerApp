@@ -1,11 +1,12 @@
 .RightSide {
-    &Wrapper {
-        display: flex;
-        flex-direction: row;
-    }
+  &Wrapper {
+    display: flex;
+    flex-direction: row;
+  }
 
-    &Greeting {
-        align-content: center;
-        margin-right: 20px;
-    }
+  &Greeting {
+    align-items: center;
+    margin-right: 20px;
+    display: flex;
+  }
 }

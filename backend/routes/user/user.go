@@ -20,4 +20,7 @@ func AddPrivateRoutes(router *gin.RouterGroup, db *sql.DB) {
 	router.GET("user/data", func(c *gin.Context) {
 		user.Data(c, db)
 	})
+	router.POST("user/logout", func(c *gin.Context) {
+		user.Logout(c)
+	})
 }

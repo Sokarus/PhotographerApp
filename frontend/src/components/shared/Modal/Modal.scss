@@ -12,12 +12,13 @@
     &Wrapper {
       position: relative;
       margin: auto;
-      width: 400px;
+      min-width: 400px;
+      width: fit-content;
       height: fit-content;
       background-color: red;
       border-radius: 20px;
       min-height: 200px;
-      top: calc(50% - 100px);
+      top: 15vh;
     }
 
     &Header {

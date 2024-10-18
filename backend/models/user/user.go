@@ -3,6 +3,7 @@ package user
 import (
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"log"
 	"time"
 
@@ -24,12 +25,12 @@ type Claims struct {
 	jwt.StandardClaims
 }
 
-func (u *User) CreateUser(db *sql.DB, jwtKey []byte) (string, string) {
+func (u *User) CreateUser(db *sql.DB, jwtKey []byte) (string, error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
 
 	if err != nil {
 		log.Println("Hash generating from password error:", err)
-		return "", "Hash password error"
+		return "", errors.New("hash password error")
 	}
 
 	u.Password = string(hashedPassword)
@@ -41,11 +42,11 @@ func (u *User) CreateUser(db *sql.DB, jwtKey []byte) (string, string) {
 		log.Println("Insert new user error:", err)
 		if pqErr, ok := err.(*pq.Error); ok {
 			if pqErr.Code == "23505" {
-				return "", pqErr.Constraint
+				return "", errors.New(pqErr.Constraint)
 			}
 		}
 
-		return "", "Db request error"
+		return "", errors.New("db request error")
 	}
 
 	return u.Auth(db, jwtKey)
@@ -62,30 +63,29 @@ func (u *User) CheckPassword(password string) bool {
 	return true
 }
 
-func (u *User) DoLogin(db *sql.DB, jwtKey []byte) (string, string) {
-	var login string
-
-	query := "select login from users where login = $1"
-	err := db.QueryRow(query, u.Login).Scan(&login)
+func (u *User) DoLogin(db *sql.DB, jwtKey []byte) (string, error) {
+	secretPassword := u.Password
+	query := "select login, password from users where login = $1"
+	err := db.QueryRow(query, u.Login).Scan(&u.Login, &u.Password)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
-			log.Println("Db error, user with login " + login + " are not exist")
-			return "", "User not exist"
+			log.Println("Db error, user with login " + u.Login + " are not exist")
+			return "", errors.New("User not exist")
 		} else {
 			log.Println("Db error:", err)
-			return "", "Db request error"
+			return "", errors.New("db request error")
 		}
 	}
 
-	if !u.CheckPassword(u.Password) {
-		return "", "Wrong password"
+	if !u.CheckPassword(secretPassword) {
+		return "", errors.New("wrong password")
 	}
 
 	return u.Auth(db, jwtKey)
 }
 
-func (u *User) Auth(db *sql.DB, jwtKey []byte) (string, string) {
+func (u *User) Auth(db *sql.DB, jwtKey []byte) (string, error) {
 	expirationTime := time.Now().Add(60 * time.Minute)
 	claims := &Claims{
 		Login: u.Login,
@@ -98,13 +98,13 @@ func (u *User) Auth(db *sql.DB, jwtKey []byte) (string, string) {
 	tokenString, err := token.SignedString(jwtKey)
 
 	if err != nil {
-		return "", "Coudnt make token"
+		return "", errors.New("coudnt make token")
 	}
 
-	return tokenString, ""
+	return tokenString, nil
 }
 
-func Data(db *sql.DB, login string) (map[string]interface{}, string) {
+func Data(db *sql.DB, login string) (map[string]interface{}, error) {
 	var user User
 	var rolesBytes []byte
 
@@ -114,21 +114,21 @@ func Data(db *sql.DB, login string) (map[string]interface{}, string) {
 	if err != nil {
 		if err == sql.ErrNoRows {
 			log.Println("Db error, user with login " + login + " are not exist")
-			return nil, "User not exist"
+			return nil, errors.New("user not exist")
 		} else {
 			log.Println("Db error:", err)
-			return nil, "Db request error"
+			return nil, errors.New("db request error")
 		}
 	}
 
 	if err := json.Unmarshal(rolesBytes, &user.Roles); err != nil {
 		log.Println("Parse roles from db error:", err)
-		return nil, "Cant parse roles from db"
+		return nil, errors.New("cant parse roles from db")
 	}
 
 	return map[string]interface{}{
 		"login": user.Login,
 		"email": user.Email,
 		"roles": user.Roles,
-	}, ""
+	}, nil
 }

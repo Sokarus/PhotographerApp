@@ -4,7 +4,8 @@
   flex-direction: row;
   width: 100%;
   height: 50px;
-  background-color: aqua;
+  background: linear-gradient(to bottom, rgb(74, 74, 74), rgba(208, 255, 177, 0.1));
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.3);
   justify-content: space-between;
   border-bottom-left-radius: 30px;
   border-bottom-right-radius: 30px;

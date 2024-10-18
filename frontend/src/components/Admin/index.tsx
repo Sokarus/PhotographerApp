@@ -14,14 +14,15 @@ const Admin: React.FC = () => {
     <>
       <Header />
       <div className={'AdminWrapper'}>
-        <ImageButton
-          url={'static/icons/add.svg'}
-          alt={'add'}
-          onClick={() => setIsCreatePhotosessionModalOpened(true)}
-        >
-          <Text text={'Создать фотосессию'} />
-        </ImageButton>
-        <input type={'file'} accept={'image/png image/jpeg'} />
+        <div className={'AdminContent'}>
+          <ImageButton
+            url={'static/icons/add.svg'}
+            alt={'add'}
+            onClick={() => setIsCreatePhotosessionModalOpened(true)}
+          >
+            <Text text={'Создать фотосессию'} />
+          </ImageButton>
+        </div>
       </div>
       <CreatePhotosessionModal
         isOpened={isCreatePhotosessionModalOpened}

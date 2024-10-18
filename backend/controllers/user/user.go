@@ -28,32 +28,35 @@ func Login(c *gin.Context, db *sql.DB, jwtKey []byte) {
 
 	token, err := user.DoLogin(db, jwtKey)
 
-	switch err {
-	case "User not exist":
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Пользователь не найден."})
-		return
-	case "Wrong password":
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Неверный пароль."})
-		return
-	case "Coudnt make token":
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Ошибка, попробуйте позже."})
-		return
-	case "Db request error":
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Ошибка, попробуйте позже."})
+	if err == nil {
+		c.SetCookie(
+			"authToken",
+			token,
+			3600,
+			"/",
+			"localhost",
+			false,
+			true,
+		)
+
+		c.Status(http.StatusOK)
 		return
 	}
 
-	c.SetCookie(
-		"authToken",
-		token,
-		3600,
-		"/",
-		"localhost",
-		false,
-		true,
-	)
-
-	c.Status(http.StatusOK)
+	switch err.Error() {
+	case "user not exist":
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Пользователь не найден."})
+		return
+	case "wrong password":
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Неверный пароль."})
+		return
+	case "coudnt make token":
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Ошибка, попробуйте позже."})
+		return
+	case "db request error":
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Ошибка, попробуйте позже."})
+		return
+	}
 }
 
 type RegistrationData struct {
@@ -78,35 +81,38 @@ func Registration(c *gin.Context, db *sql.DB, jwtKey []byte) {
 
 	token, err := user.CreateUser(db, jwtKey)
 
-	switch err {
+	if err == nil {
+		c.SetCookie(
+			"authToken",
+			token,
+			3600,
+			"/",
+			"localhost",
+			false,
+			true,
+		)
+
+		c.Status(http.StatusCreated)
+		return
+	}
+
+	switch err.Error() {
 	case "unique_login":
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Такой логин уже существует."})
 		return
 	case "unique_email":
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Данная почта уже используется."})
 		return
-	case "Db request error":
+	case "db request error":
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Ошибка, попробуйте позже."})
 		return
-	case "Hash password error":
+	case "hash password error":
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Ошибка, попробуйте позже."})
 		return
-	case "Cant parse roles from db":
+	case "cant parse roles from db":
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Ошибка, попробуйте позже."})
 		return
 	}
-
-	c.SetCookie(
-		"authToken",
-		token,
-		3600,
-		"/",
-		"localhost",
-		false,
-		true,
-	)
-
-	c.Status(http.StatusCreated)
 }
 
 func Data(c *gin.Context, db *sql.DB) {
@@ -123,19 +129,37 @@ func Data(c *gin.Context, db *sql.DB) {
 		return
 	}
 
-	userData, error := user.Data(db, loginStr)
+	userData, err := user.Data(db, loginStr)
 
-	switch error {
-	case "Not valid token":
-		c.JSON(http.StatusUnauthorized, gin.H{"message": "Невалидный токен."})
-		return
-	case "User not exist":
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Пользователь не найден."})
-		return
-	case "Db request error":
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Ошибка, попробуйте позже."})
+	if err == nil {
+		c.JSON(http.StatusOK, gin.H{"login": userData["login"], "roles": userData["roles"]})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"login": userData["login"], "roles": userData["roles"]})
+	switch err.Error() {
+	case "not valid token":
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Невалидный токен."})
+		return
+	case "user not exist":
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Пользователь не найден."})
+		return
+	case "db request error":
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Ошибка, попробуйте позже."})
+		return
+	}
+}
+
+func Logout(c *gin.Context) {
+	c.SetCookie(
+		"authToken",
+		"",
+		0,
+		"/",
+		"localhost",
+		false,
+		true,
+	)
+	c.Set("login", nil)
+
+	c.Status(http.StatusOK)
 }

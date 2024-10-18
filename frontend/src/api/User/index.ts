@@ -43,6 +43,15 @@ const UserData = async (): Promise<IUserData> => {
     if (response.status === 200) {
       const userData = await response.json();
 
+      localStorage.setItem(
+        'user',
+        JSON.stringify({
+          login: userData.login,
+          roles: userData.roles,
+          date: new Date().toJSON(),
+        })
+      );
+
       return {
         login: userData.login,
         roles: userData.roles,
@@ -57,4 +66,10 @@ const UserData = async (): Promise<IUserData> => {
   });
 };
 
-export {Registration, Login, UserData};
+const Logout = async () => {
+  return await fetch('api/user/logout', {
+    method: 'POST',
+  });
+};
+
+export {Registration, Login, UserData, Logout};
