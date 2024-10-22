@@ -1,0 +1,24 @@
+.Pending {
+  position: absolute;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(150, 150, 150, 0.7);
+  z-index: 3;
+
+  align-content: center;
+  text-align: center;
+
+  &Image {
+    animation: rotate 1s linear infinite;
+
+    @keyframes rotate {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+  }
+}

@@ -6,6 +6,7 @@ import (
 	"os"
 	"photographer-app/config"
 	"photographer-app/db"
+	"photographer-app/models/yandex"
 	"photographer-app/routes"
 )
 
@@ -17,9 +18,15 @@ func main() {
 		os.Exit(1)
 	}
 
+	yandex := yandex.Yandex{
+		Url:    config.S3Cloud.Url,
+		Bucket: config.S3Cloud.Bucket,
+		Region: config.S3Cloud.Region,
+	}
+
 	var jwtKey = []byte(config.Auth.JwtKey)
 	db := db.GetConnection(config)
 	defer db.Close()
-	routes := routes.InitRouter(db, jwtKey)
+	routes := routes.InitRouter(db, jwtKey, &yandex)
 	http.ListenAndServe(":8080", routes)
 }

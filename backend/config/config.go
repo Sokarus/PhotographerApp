@@ -19,6 +19,13 @@ type Config struct {
 	Auth struct {
 		JwtKey string `yaml:"jwtKey"`
 	} `yaml:"auth"`
+	S3Cloud struct {
+		Url       string `yaml:"url"`
+		Region    string `yaml:"region"`
+		Bucket    string `yaml:"bucket"`
+		KeyId     string `yaml:"key_id"`
+		AccessKey string `yaml:"access_key"`
+	} `yaml:"s3_cloud"`
 }
 
 func LoadConfig() (*Config, error) {

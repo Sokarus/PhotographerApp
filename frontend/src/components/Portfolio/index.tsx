@@ -2,7 +2,7 @@ import React from 'react';
 import {toast} from 'react-toastify';
 import {Header} from '@components';
 import {Photosession} from '@type/photosession';
-import {PhotosessionsData} from '@api/Photosession';
+import {PhotosessionsList} from '@api/Photosession';
 import './Portfolio.scss';
 
 // TODO remove this
@@ -25,11 +25,11 @@ const mockData = [
 ] as Photosession[];
 
 const Portfolio: React.FC = () => {
-  const [photosession, setPhotosession] = React.useState<Photosession[]>([]);
+  const [photosessions, setPhotosessions] = React.useState<Photosession[]>([]);
 
   React.useEffect(() => {
-    PhotosessionsData()
-      .then((photosessionsData) => setPhotosession(photosessionsData))
+    PhotosessionsList()
+      .then((photosessionsList) => setPhotosessions(photosessionsList))
       .catch((error) => {
         toast.error((error as Error).message);
       });

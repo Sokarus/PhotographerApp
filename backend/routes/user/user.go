@@ -8,17 +8,26 @@ import (
 )
 
 func AddPublicRoutes(router *gin.RouterGroup, db *sql.DB, jwtKey []byte) {
+	userController := user.Controller{
+		DB:     db,
+		JwtKey: jwtKey,
+	}
+
 	router.POST("user/login", func(c *gin.Context) {
-		user.Login(c, db, jwtKey)
+		userController.Login(c)
 	})
 	router.POST("user/registration", func(c *gin.Context) {
-		user.Registration(c, db, jwtKey)
+		userController.Registration(c)
 	})
 }
 
 func AddPrivateRoutes(router *gin.RouterGroup, db *sql.DB) {
+	userController := user.Controller{
+		DB: db,
+	}
+
 	router.GET("user/data", func(c *gin.Context) {
-		user.Data(c, db)
+		userController.Data(c)
 	})
 	router.POST("user/logout", func(c *gin.Context) {
 		user.Logout(c)

@@ -6,6 +6,7 @@ import {setLogin as setLoginState, setRoles} from '@state/User';
 import {Registration, UserData} from '@api/User';
 import {BaseModal} from '@type/modal';
 import {ValidateLogin, ValidateEmail, ValidatePassword} from '@utils/validator';
+import {ColorTheme} from '@constant/style';
 import './RegistrationModal.scss';
 
 interface IRegistrationModal extends BaseModal {}
@@ -31,7 +32,7 @@ const RegistrationModal: React.FC<IRegistrationModal> = ({isOpened, onClose}) =>
     }
 
     return true;
-  }, [login, password]);
+  }, [login, password, email]);
 
   const registrationHandler = React.useCallback(async () => {
     if (!validateRegistration()) {
@@ -54,40 +55,46 @@ const RegistrationModal: React.FC<IRegistrationModal> = ({isOpened, onClose}) =>
   }, [login, email, password]);
 
   return (
-    <Modal isOpened={isOpened} title={'Зарегистрироваться'} onClose={onClose}>
+    <Modal isOpened={isOpened} onClose={onClose}>
       <div className={'RegistrationModalWrapper'}>
         <div className={'RegistrationModalInput'}>
-          <Text text={'Логин'} />
+          <Text text={'Логин'} color={ColorTheme.white} />
           <InputText
             text={login}
             type={'text'}
+            placeholder={'Введите логин'}
+            color={ColorTheme.white}
             setText={(event: React.ChangeEvent<HTMLInputElement>) =>
               setLogin(event.currentTarget.value)
             }
           />
         </div>
         <div className={'RegistrationModalInput'}>
-          <Text text={'Email'} />
+          <Text text={'Email'} color={ColorTheme.white} />
           <InputText
             text={email}
             type={'email'}
+            placeholder={'Введите email'}
+            color={ColorTheme.white}
             setText={(event: React.ChangeEvent<HTMLInputElement>) =>
               setEmail(event.currentTarget.value)
             }
           />
         </div>
         <div className={'RegistrationModalInput'}>
-          <Text text={'Пароль'} />
+          <Text text={'Пароль'} color={ColorTheme.white} />
           <InputText
             text={password}
             type={'password'}
+            placeholder={'Введите пароль'}
+            color={ColorTheme.white}
             setText={(event: React.ChangeEvent<HTMLInputElement>) =>
               setPassword(event.currentTarget.value)
             }
           />
         </div>
         <Button onClick={registrationHandler}>
-          <Text text={'Зарегистрироваться'} />
+          <Text text={'Зарегистрироваться'} color={ColorTheme.white} />
         </Button>
       </div>
     </Modal>

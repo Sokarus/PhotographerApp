@@ -25,6 +25,7 @@
       "@api/*": ["api/*"],
       "@hook/*": ["hook/*"],
       "@utils/*": ["utils/*"],
+      "@constant/*": ["constant/*"]
     }
   },
   "include": ["src"]

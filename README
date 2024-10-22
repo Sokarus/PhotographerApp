@@ -3,10 +3,17 @@ wsl --shutdown
 
 cd /mnt/c/Users/Sokar/Desktop/Projects/PhotographerApp/
 
-migrate create -ext sql -dir migrations -seq create_users_table
+migrate create -ext sql -dir migrations -seq create_photos_table
 
 migrate -path ./migrations -database "postgres://postgres:secret@localhost:5432/photographer?sslmode=disable" up
 migrate -path ./migrations -database "postgres://postgres:secret@localhost:5432/photographer?sslmode=disable" force 1
 migrate -path ./migrations -database "postgres://postgres:secret@localhost:5432/photographer?sslmode=disable" drop
 
 docker exec -ti -u postgres postgres psql
+
+Отдельно клиентская галерея /photosession/gallery_name + возможность редактировать (менять позиции фото) и удалять фото
+Отдельно основная галерея /portfolio/gallery_name (список фотосессий с возможностью открыть фотоссессию) 
++ позиционирование относительно других галерей + возмоность скрывать и менять местами фото внутри галереии
++ галочка - опубликована или нет
+
+Страница с пресетами

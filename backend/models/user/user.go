@@ -25,7 +25,7 @@ type Claims struct {
 	jwt.StandardClaims
 }
 
-func (u *User) CreateUser(db *sql.DB, jwtKey []byte) (string, error) {
+func (u *User) Create(db *sql.DB, jwtKey []byte) (string, error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
 
 	if err != nil {

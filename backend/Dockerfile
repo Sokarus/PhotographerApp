@@ -16,6 +16,7 @@ WORKDIR /root/
 
 COPY --from=build /app/main .
 COPY --from=build /app/config.yaml .
+COPY --from=build /app/.aws ./.aws
 
 EXPOSE 8080
 

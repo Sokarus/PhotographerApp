@@ -3,6 +3,8 @@ package routes
 import (
 	"database/sql"
 	"net/http"
+	"photographer-app/models/yandex"
+	"photographer-app/routes/photosession"
 	"photographer-app/routes/user"
 
 	"github.com/dgrijalva/jwt-go"
@@ -14,7 +16,7 @@ type Claims struct {
 	jwt.StandardClaims
 }
 
-func InitRouter(db *sql.DB, jwtKey []byte) *gin.Engine {
+func InitRouter(db *sql.DB, jwtKey []byte, yandex *yandex.Yandex) *gin.Engine {
 	router := gin.Default()
 	oapi := router.Group("/oapi/")
 	{
@@ -24,6 +26,7 @@ func InitRouter(db *sql.DB, jwtKey []byte) *gin.Engine {
 	api.Use(AuthMiddleware(jwtKey))
 	{
 		user.AddPrivateRoutes(api, db)
+		photosession.AddPrivateRoutes(api, db, yandex)
 	}
 
 	return router
@@ -70,9 +73,4 @@ func AuthMiddleware(jwtKey []byte) gin.HandlerFunc {
 		c.Set("login", claims.Login)
 		c.Next()
 	}
-}
-
-func protected(c *gin.Context) {
-	username := c.MustGet("username").(string)
-	c.JSON(http.StatusOK, gin.H{"message": "Добро пожаловать!", "user": username})
 }

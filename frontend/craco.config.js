@@ -10,6 +10,7 @@ module.exports = {
       '@api': path.resolve(__dirname, 'src/api'),
       '@hook': path.resolve(__dirname, 'src/hook'),
       '@utils': path.resolve(__dirname, 'src/utils'),
+      '@constant': path.resolve(__dirname, 'src/constant'),
     },
   },
 };

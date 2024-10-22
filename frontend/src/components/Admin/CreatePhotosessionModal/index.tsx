@@ -1,99 +1,134 @@
 import React from 'react';
-import {Modal, InputText, Text, Button, InputImage} from '@shared';
+import {toast} from 'react-toastify';
+import {Modal, InputText, Text, InputImage, Button} from '@shared';
 import {BaseModal} from '@type/modal';
+import {ColorTheme} from '@constant/style';
+import {Create} from '@api/Photosession';
+import {Pending} from '@components';
 import './CreatePhotosessionModal.scss';
 
 interface ICreatePhotosessionModal extends BaseModal {}
 
-interface ImageObject {
+interface PhotoObject {
   file: File;
   url: string;
 }
 
 const CreatePhotosessionModal: React.FC<ICreatePhotosessionModal> = ({isOpened, onClose}) => {
   const [title, setTitle] = React.useState<string>('');
-  const [images, setImages] = React.useState<ImageObject[]>();
-  const dragImageRef = React.useRef<HTMLImageElement | null>(null);
+  const [photos, setPhotos] = React.useState<PhotoObject[]>([]);
+  const [isPending, setIsPending] = React.useState<boolean>(false);
+  const dragPhotoRef = React.useRef<HTMLImageElement | null>(null);
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const createHandler = React.useCallback(async () => {
+    if (title.length < 3) {
+      toast.warning('Название должо быть больше 2-х символов');
+      return;
+    }
+    if (!photos.length) {
+      toast.warning('Нужно загрузить хотя бы 1 фото!');
+      return;
+    }
+
+    try {
+      const imagesFiles: File[] = photos.map((photoObject) => photoObject.file);
+      setIsPending(true);
+      await Create(title, imagesFiles);
+      toast.success('Фотосессия успешно создана!');
+    } catch (error) {
+      toast.error((error as Error).message);
+    } finally {
+      setIsPending(false);
+      onClose();
+    }
+  }, [title, photos]);
+
+  const photoUploadHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files) {
-      const newImages = Array.from(files).map((file) => ({
+      const newPhotos = Array.from(files).map((file) => ({
         file,
         url: URL.createObjectURL(file),
       }));
-      setImages((prevImages) => [...(prevImages || []), ...newImages]);
+      setPhotos((prevPhotos) => [...(prevPhotos || []), ...newPhotos]);
     }
   };
 
-  const handleDragStart = (event: React.DragEvent<HTMLDivElement>, index: number) => {
+  const dragStartHandler = (event: React.DragEvent<HTMLDivElement>, index: number) => {
     event.dataTransfer.setData('index', index.toString());
 
-    if (dragImageRef.current) {
-      dragImageRef.current.src = images?.[index].url || '';
-      event.dataTransfer.setDragImage(dragImageRef.current, 50, 50);
+    if (dragPhotoRef.current) {
+      dragPhotoRef.current.src = photos[index]?.url || '';
+      event.dataTransfer.setDragImage(dragPhotoRef.current, 50, 50);
     }
   };
 
-  const handleDrop = (event: React.DragEvent<HTMLDivElement>, index: number) => {
+  const dropHandler = (event: React.DragEvent<HTMLDivElement>, index: number) => {
     const draggedIndex = event.dataTransfer.getData('index');
     if (draggedIndex === undefined) return;
 
-    const newImages = [...(images || [])];
-    const [draggedItem] = newImages.splice(parseInt(draggedIndex, 10), 1);
-    newImages.splice(index, 0, draggedItem);
+    const newPhotos = [...photos];
+    const [draggedItem] = newPhotos.splice(parseInt(draggedIndex, 10), 1);
+    newPhotos.splice(index, 0, draggedItem);
 
-    setImages(newImages);
+    setPhotos(newPhotos);
   };
 
-  const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+  const dragOverHandler = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
   };
 
   return (
-    <Modal isOpened={isOpened} title={'Создать фотосессию'} onClose={onClose}>
-      <div className={'CreatePhotosessionModalWrapper'}>
-        <div className={'CreatePhotosessionModalInput'}>
-          <Text text={'Название фотосессии'} />
-          <InputText
-            text={title}
-            type={'text'}
-            setText={(event: React.ChangeEvent<HTMLInputElement>) => setTitle(event.target.value)}
-          />
-        </div>
-        <div className={'CreatePhotosessionModalInput'}>
-          <Text text={'Загрузить фото'} />
-          <InputImage setImages={handleImageUpload} />
-        </div>
-        <div className={'CreatePhotosessionModalPreviewWrapper'}>
-          {images?.map((imageObj, index) => (
-            <div
-              className={'CreatePhotosessionModalPreviewImageWrapper'}
-              key={index}
-              draggable
-              onDragStart={(event) => handleDragStart(event, index)}
-              onDrop={(event) => handleDrop(event, index)}
-              onDragOver={handleDragOver}
-            >
-              <div className={'CreatePhotosessionModalPreviewImageNumber'}>
-                <Text text={index} />
+    <>
+      <Modal isOpened={isOpened} title={'Создать фотосессию'} onClose={onClose} backgroundBlur={1} fullWindow>
+        <div className={'CreatePhotosessionModalWrapper'}>
+          <div className={'CreatePhotosessionModalInput'}>
+            <Text text={'Название фотосессии'} color={ColorTheme.white} size={'large'} />
+            <InputText
+              text={title}
+              type={'text'}
+              color={ColorTheme.white}
+              placeholder={'Введите название фотосессии'}
+              setText={(event: React.ChangeEvent<HTMLInputElement>) => setTitle(event.target.value)}
+            />
+          </div>
+          <div className={'CreatePhotosessionModalInput'}>
+            <InputImage setImages={photoUploadHandler} />
+          </div>
+          <div className={'CreatePhotosessionModalPreviewWrapper'}>
+            {photos.map((photoObj, index) => (
+              <div
+                className={'CreatePhotosessionModalPreviewImageWrapper'}
+                key={index}
+                draggable
+                onDragStart={(event) => dragStartHandler(event, index)}
+                onDrop={(event) => dropHandler(event, index)}
+                onDragOver={dragOverHandler}
+              >
+                <div className={'CreatePhotosessionModalPreviewImageNumber'}>
+                  <Text text={index} />
+                </div>
+                <img src={photoObj.url} alt={`Uploaded preview ${index}`} />
+                <img
+                  ref={dragPhotoRef}
+                  src={''}
+                  alt={'drag preview'}
+                  style={{
+                    position: 'absolute',
+                    top: '-9999px',
+                    left: '-9999px',
+                  }}
+                />
               </div>
-              <img src={imageObj.url} alt={`Uploaded preview ${index}`} />
-              <img
-                ref={dragImageRef}
-                src={''}
-                alt={'drag preview'}
-                style={{
-                  position: 'absolute',
-                  top: '-9999px',
-                  left: '-9999px',
-                }}
-              />
-            </div>
-          ))}
+            ))}
+          </div>
+          <Button onClick={createHandler}>
+            <Text text={'Создать'} color={ColorTheme.white} size={'large'} />
+          </Button>
         </div>
-      </div>
-    </Modal>
+      </Modal>
+      <Pending isPending={isPending} />
+    </>
   );
 };
 

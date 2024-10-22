@@ -8,25 +8,36 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type Controller struct {
+	DB     *sql.DB
+	JwtKey []byte
+}
+
 type LoginData struct {
 	Login    string `json:"login" binding:"required,min=3"`
 	Password string `json:"password" binding:"required,min=6"`
 }
 
-func Login(c *gin.Context, db *sql.DB, jwtKey []byte) {
-	var json LoginData
+type RegistrationData struct {
+	Login    string `json:"login" binding:"required,min=3"`
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required,min=6"`
+}
 
-	if err := c.ShouldBindJSON(&json); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+func (uc *Controller) Login(c *gin.Context) {
+	var loginData LoginData
+
+	if err := c.ShouldBindJSON(&loginData); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Ошибка валидации данных."})
 		return
 	}
 
 	user := user.User{
-		Login:    json.Login,
-		Password: json.Password,
+		Login:    loginData.Login,
+		Password: loginData.Password,
 	}
 
-	token, err := user.DoLogin(db, jwtKey)
+	token, err := user.DoLogin(uc.DB, uc.JwtKey)
 
 	if err == nil {
 		c.SetCookie(
@@ -51,35 +62,29 @@ func Login(c *gin.Context, db *sql.DB, jwtKey []byte) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Неверный пароль."})
 		return
 	case "coudnt make token":
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Ошибка, попробуйте позже."})
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Ошибка, попробуйте позже."})
 		return
 	case "db request error":
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Ошибка, попробуйте позже."})
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Ошибка, попробуйте позже."})
 		return
 	}
 }
 
-type RegistrationData struct {
-	Login    string `json:"login" binding:"required,min=3"`
-	Email    string `json:"email" binding:"required,email"`
-	Password string `json:"password" binding:"required,min=6"`
-}
+func (uc *Controller) Registration(c *gin.Context) {
+	var registrationData RegistrationData
 
-func Registration(c *gin.Context, db *sql.DB, jwtKey []byte) {
-	var json RegistrationData
-
-	if err := c.ShouldBindJSON(&json); err != nil {
+	if err := c.ShouldBindJSON(&registrationData); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	user := user.User{
-		Login:    json.Login,
-		Email:    json.Email,
-		Password: json.Password,
+		Login:    registrationData.Login,
+		Email:    registrationData.Email,
+		Password: registrationData.Password,
 	}
 
-	token, err := user.CreateUser(db, jwtKey)
+	token, err := user.Create(uc.DB, uc.JwtKey)
 
 	if err == nil {
 		c.SetCookie(
@@ -104,32 +109,32 @@ func Registration(c *gin.Context, db *sql.DB, jwtKey []byte) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Данная почта уже используется."})
 		return
 	case "db request error":
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Ошибка, попробуйте позже."})
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Ошибка, попробуйте позже."})
 		return
 	case "hash password error":
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Ошибка, попробуйте позже."})
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Ошибка, попробуйте позже."})
 		return
 	case "cant parse roles from db":
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Ошибка, попробуйте позже."})
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Ошибка, попробуйте позже."})
 		return
 	}
 }
 
-func Data(c *gin.Context, db *sql.DB) {
+func (uc *Controller) Data(c *gin.Context) {
 	login, exist := c.Get("login")
 
 	if !exist {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Ошибка авторизации"})
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Ошибка авторизации"})
 		return
 	}
 
 	loginStr, ok := login.(string)
 	if !ok {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Ошибка авторизации"})
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Ошибка авторизации"})
 		return
 	}
 
-	userData, err := user.Data(db, loginStr)
+	userData, err := user.Data(uc.DB, loginStr)
 
 	if err == nil {
 		c.JSON(http.StatusOK, gin.H{"login": userData["login"], "roles": userData["roles"]})

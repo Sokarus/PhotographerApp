@@ -6,6 +6,7 @@ import {setLogin as setLoginState, setRoles} from '@state/User';
 import {Login, UserData} from '@api/User';
 import {BaseModal} from '@type/modal';
 import {ValidateLogin, ValidatePassword} from '@utils/validator';
+import {ColorTheme} from '@constant/style';
 import './LoginModal.scss';
 
 interface ILoginModal extends BaseModal {}
@@ -49,30 +50,34 @@ const LoginModal: React.FC<ILoginModal> = ({isOpened, onClose}) => {
   }, [login, password]);
 
   return (
-    <Modal isOpened={isOpened} title={'Войти'} onClose={onClose}>
+    <Modal isOpened={isOpened} onClose={onClose}>
       <div className={'LoginModalWrapper'}>
         <div className={'LoginModalInput'}>
-          <Text text={'Логин'} />
+          <Text text={'Логин'} color={ColorTheme.white} size={'large'} />
           <InputText
             text={login}
             type={'text'}
+            placeholder={'Ваш логин'}
+            color={ColorTheme.white}
             setText={(event: React.ChangeEvent<HTMLInputElement>) =>
               setLogin(event.currentTarget.value)
             }
           />
         </div>
         <div className={'LoginModalInput'}>
-          <Text text={'Пароль'} />
+          <Text text={'Пароль'} color={ColorTheme.white} size={'large'} />
           <InputText
             text={password}
             type={'password'}
+            placeholder={'Ваш пароль'}
+            color={ColorTheme.white}
             setText={(event: React.ChangeEvent<HTMLInputElement>) =>
               setPassword(event.currentTarget.value)
             }
           />
         </div>
         <Button onClick={loginHandler}>
-          <Text text={'Войти'} />
+          <Text text={'Войти'} color={ColorTheme.white} size={'large'} />
         </Button>
       </div>
     </Modal>
