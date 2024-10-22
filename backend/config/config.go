@@ -26,6 +26,9 @@ type Config struct {
 		KeyId     string `yaml:"key_id"`
 		AccessKey string `yaml:"access_key"`
 	} `yaml:"s3_cloud"`
+	Server struct {
+		Host string `yaml:"host"`
+	} `yaml:"server"`
 }
 
 func LoadConfig() (*Config, error) {

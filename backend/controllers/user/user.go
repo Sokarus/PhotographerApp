@@ -11,6 +11,7 @@ import (
 type Controller struct {
 	DB     *sql.DB
 	JwtKey []byte
+	Host   string
 }
 
 type LoginData struct {
@@ -45,7 +46,7 @@ func (uc *Controller) Login(c *gin.Context) {
 			token,
 			3600,
 			"/",
-			"localhost",
+			uc.Host,
 			false,
 			true,
 		)
@@ -92,7 +93,7 @@ func (uc *Controller) Registration(c *gin.Context) {
 			token,
 			3600,
 			"/",
-			"localhost",
+			uc.Host,
 			false,
 			true,
 		)
@@ -154,13 +155,13 @@ func (uc *Controller) Data(c *gin.Context) {
 	}
 }
 
-func Logout(c *gin.Context) {
+func Logout(c *gin.Context, host string) {
 	c.SetCookie(
 		"authToken",
 		"",
 		0,
 		"/",
-		"localhost",
+		host,
 		false,
 		true,
 	)

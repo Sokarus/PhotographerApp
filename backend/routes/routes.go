@@ -16,16 +16,16 @@ type Claims struct {
 	jwt.StandardClaims
 }
 
-func InitRouter(db *sql.DB, jwtKey []byte, yandex *yandex.Yandex) *gin.Engine {
+func InitRouter(db *sql.DB, jwtKey []byte, yandex *yandex.Yandex, host string) *gin.Engine {
 	router := gin.Default()
 	oapi := router.Group("/oapi/")
 	{
-		user.AddPublicRoutes(oapi, db, jwtKey)
+		user.AddPublicRoutes(oapi, db, jwtKey, host)
 	}
 	api := router.Group("/api/")
 	api.Use(AuthMiddleware(jwtKey))
 	{
-		user.AddPrivateRoutes(api, db)
+		user.AddPrivateRoutes(api, db, host)
 		photosession.AddPrivateRoutes(api, db, yandex)
 	}
 

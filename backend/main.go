@@ -27,6 +27,6 @@ func main() {
 	var jwtKey = []byte(config.Auth.JwtKey)
 	db := db.GetConnection(config)
 	defer db.Close()
-	routes := routes.InitRouter(db, jwtKey, &yandex)
+	routes := routes.InitRouter(db, jwtKey, &yandex, config.Server.Host)
 	http.ListenAndServe(":8080", routes)
 }

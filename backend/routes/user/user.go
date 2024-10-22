@@ -7,10 +7,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func AddPublicRoutes(router *gin.RouterGroup, db *sql.DB, jwtKey []byte) {
+func AddPublicRoutes(router *gin.RouterGroup, db *sql.DB, jwtKey []byte, host string) {
 	userController := user.Controller{
 		DB:     db,
 		JwtKey: jwtKey,
+		Host:   host,
 	}
 
 	router.POST("user/login", func(c *gin.Context) {
@@ -21,7 +22,7 @@ func AddPublicRoutes(router *gin.RouterGroup, db *sql.DB, jwtKey []byte) {
 	})
 }
 
-func AddPrivateRoutes(router *gin.RouterGroup, db *sql.DB) {
+func AddPrivateRoutes(router *gin.RouterGroup, db *sql.DB, host string) {
 	userController := user.Controller{
 		DB: db,
 	}
@@ -30,6 +31,6 @@ func AddPrivateRoutes(router *gin.RouterGroup, db *sql.DB) {
 		userController.Data(c)
 	})
 	router.POST("user/logout", func(c *gin.Context) {
-		user.Logout(c)
+		user.Logout(c, host)
 	})
 }
