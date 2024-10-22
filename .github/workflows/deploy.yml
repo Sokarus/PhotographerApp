@@ -55,7 +55,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: backend-build
-          path: backend/app
+          path: backend/main
 
   deploy:
     name: Deploy to Production Server
@@ -64,12 +64,12 @@ jobs:
 
     steps:
       - name: Download frontend build artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: frontend-build
 
       - name: Download backend build artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: backend-build
 
