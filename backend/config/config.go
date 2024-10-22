@@ -29,7 +29,7 @@ type Config struct {
 }
 
 func LoadConfig() (*Config, error) {
-	data, err := os.ReadFile("/root/config.yaml")
+	data, err := os.ReadFile("/app/config.yaml")
 	if err != nil {
 		return nil, fmt.Errorf("не удалось прочитать файл конфигурации: %w", err)
 	}
