@@ -12,4 +12,4 @@ s3_cloud:
   region: "ru-central1"
   bucket: "kocherovaphoto"
 server:
-  host: localhost
+  host: "localhost"

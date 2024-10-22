@@ -11,7 +11,6 @@ import 'react-toastify/dist/ReactToastify.css';
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 
 root.render(
-  // <React.StrictMode>
   <Provider store={store}>
     <Router>
       <Auth>
@@ -27,5 +26,4 @@ root.render(
     </Router>
     <ToastContainer />
   </Provider>
-  // </React.StrictMode>
 );
