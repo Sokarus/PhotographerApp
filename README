@@ -11,6 +11,7 @@ migrate -path ./migrations -database "postgres://postgres:secret@localhost:5432/
 
 docker exec -ti -u postgres postgres psql
 
+npm run build
 tar -czcf frontend_build.tar.gz ./build/
 scp frontend_build.tar.gz root@159.65.43.81:./PhotographerApp/frontend/
 tar -xzvf frontend_build.tar.gz

@@ -8,7 +8,12 @@ interface IPending {
 const Pending: React.FC<IPending> = ({isPending}) => {
   return isPending ? (
     <div className={'Pending'}>
-      <img className={'PendingImage'} width={50} height={50} src={'static/icons/pending.svg'} />
+      <img
+        className={'PendingImage'}
+        width={50}
+        height={50}
+        src={'https://storage.yandexcloud.net/kocherovaphoto/icons/pending.svg'}
+      />
     </div>
   ) : (
     <></>

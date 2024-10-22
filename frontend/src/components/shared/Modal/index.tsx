@@ -33,7 +33,7 @@ const Modal: React.FC<IModal> = ({
       <div className={`ModalWindowWrapper ${fullWindow ? 'ModalWindowFull' : ''}`}>
         <div className={'ModalWindowHeaderWrapper'}>
           {title && <Text text={title} color={ColorTheme.white} size={'large'} />}
-          <ImageButton url={'static/icons/close.svg'} alt={'close'} onClick={onClose} />
+          <ImageButton url={'https://storage.yandexcloud.net/kocherovaphoto/icons/close.svg'} alt={'close'} onClick={onClose} />
         </div>
         {children}
       </div>

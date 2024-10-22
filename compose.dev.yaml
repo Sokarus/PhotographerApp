@@ -6,6 +6,8 @@ services:
       context: ./backend
       dockerfile: Dockerfile.dev
     container_name: backend
+    volumes:
+      - ./backend:/app
     ports:
       - "8080:8080"
     depends_on:

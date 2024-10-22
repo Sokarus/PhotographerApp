@@ -16,7 +16,7 @@ const Admin: React.FC = () => {
       <div className={'AdminWrapper'}>
         <div className={'AdminContent'}>
           <ImageButton
-            url={'static/icons/add.svg'}
+            url={'https://storage.yandexcloud.net/kocherovaphoto/icons/add.svg'}
             alt={'add'}
             onClick={() => setIsCreatePhotosessionModalOpened(true)}
           >

@@ -6,6 +6,8 @@ services:
       context: ./backend
       dockerfile: Dockerfile.prod
     container_name: backend
+    volumes:
+      - ./backend:/app
     ports:
       - "8080:8080"
     depends_on:
@@ -19,7 +21,7 @@ services:
       dockerfile: Dockerfile.prod
     container_name: frontend
     volumes:
-      - ./frontend/:/app
+      - ./frontend:/usr/share/nginx/html
     ports:
       - "3000:3000"
     networks:
@@ -30,8 +32,6 @@ services:
       context: ./nginx
       dockerfile: Dockerfile.prod
     container_name: nginx
-    volumes:
-      - ./frontend/build/static:/static
     ports:
       - 80:80
     networks:

@@ -1,0 +1,92 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-frontend:
+    name: Build Frontend
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
+      - name: Install dependencies
+        run: |
+          cd frontend
+          npm install
+
+      - name: Build frontend
+        run: |
+          cd frontend
+          npm run build
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: frontend-build
+          path: frontend/build
+
+  build-backend:
+    name: Build Backend
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.23'
+
+      - name: Build backend
+        run: |
+          cd backend
+          CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o main
+
+      - name: Upload backend artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: backend-build
+          path: backend/app
+
+  deploy:
+    name: Deploy to Production Server
+    needs: [build-frontend, build-backend]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download frontend build artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: frontend-build
+
+      - name: Download backend build artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: backend-build
+
+      - name: Deploy to production via SSH
+        uses: appleboy/ssh-action@v0.1.3
+        with:
+          host: ${{ secrets.PROD_HOST }}
+          username: ${{ secrets.PROD_USER }}
+          key: ${{ secrets.PROD_SSH_KEY }}
+          port: 22
+          script: |
+            # Останавливаем текущие контейнеры
+            docker-compose -f /PhotographerApp/compose.prod.yaml down
+
+            # Копируем файлы с GitHub Actions на сервер
+            scp -r frontend/build/ ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:/path/to/frontend
+            scp backend/app ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:/path/to/backend/app
+
+            # Собираем и запускаем контейнеры заново
+            docker-compose -f /PhotographerApp/compose.prod.yaml up -d --build
