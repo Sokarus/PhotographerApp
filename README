@@ -11,6 +11,10 @@ migrate -path ./migrations -database "postgres://postgres:secret@localhost:5432/
 
 docker exec -ti -u postgres postgres psql
 
+tar -czcf frontend_build.tar.gz ./build/
+scp frontend_build.tar.gz root@159.65.43.81:./PhotographerApp/frontend/
+tar -xzvf frontend_build.tar.gz
+
 Отдельно клиентская галерея /photosession/gallery_name + возможность редактировать (менять позиции фото) и удалять фото
 Отдельно основная галерея /portfolio/gallery_name (список фотосессий с возможностью открыть фотоссессию) 
 + позиционирование относительно других галерей + возмоность скрывать и менять местами фото внутри галереии
