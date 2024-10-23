@@ -89,8 +89,7 @@ jobs:
           key: ${{ secrets.PROD_SSH_KEY }}
           port: 22
           script: |
-            ls -la ./frontend/build
-            ls -la ./backend
+            ls -la 
 
             scp -r ./frontend/build ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:/PhotographerApp/frontend/
             scp ./backend ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:/PhotographerApp/backend/
