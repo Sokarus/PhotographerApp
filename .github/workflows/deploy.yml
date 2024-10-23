@@ -81,12 +81,11 @@ jobs:
           key: ${{ secrets.PROD_SSH_KEY }}
           port: 22
           script: |
-            # Останавливаем текущие контейнеры
-            docker-compose -f /PhotographerApp/compose.prod.yaml down
+            cd ./PhotographerApp/
+            git pull
+            docker-compose -f compose.prod.yaml down
 
-            # Копируем файлы с GitHub Actions на сервер
-            scp -r frontend/build/ ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:/path/to/frontend
-            scp backend/app ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:/path/to/backend/app
+            scp -r frontend/build/ ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:/PhotographerApp/frontend
+            scp backend/main ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:/PhotographerApp/backend
 
-            # Собираем и запускаем контейнеры заново
-            docker-compose -f /PhotographerApp/compose.prod.yaml up -d --build
+            docker-compose -f compose.prod.yaml up -d --build
