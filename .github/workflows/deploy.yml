@@ -77,6 +77,7 @@ jobs:
 
       - name: Verify artifacts
         run: |
+          ls -la
           ls -la ./frontend/build
           ls -la ./backend
 
