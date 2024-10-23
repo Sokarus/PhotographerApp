@@ -11,10 +11,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: '16'
 
@@ -39,10 +39,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Set up Go
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v3
         with:
           go-version: '1.23'
 
@@ -67,18 +67,18 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: frontend-build
-          path: ./PhotographerApp/frontend/build
+          path: ./frontend/build
 
       - name: Download backend build artifacts
         uses: actions/download-artifact@v3
         with:
           name: backend-build
-          path: ./PhotographerApp/backend
+          path: ./backend
 
       - name: Verify artifacts
         run: |
-          ls -la ./PhotographerApp/frontend/build
-          ls -la ./PhotographerApp/backend
+          ls -la ./frontend/build
+          ls -la ./backend
 
       - name: Deploy to production via SSH
         uses: appleboy/ssh-action@master
@@ -88,11 +88,11 @@ jobs:
           key: ${{ secrets.PROD_SSH_KEY }}
           port: 22
           script: |
-            ls -la ./PhotographerApp/frontend/build/
-            ls -la ./PhotographerApp/backend/
+            ls -la ./frontend/build/
+            ls -la ./backend/
 
-            scp -r ./PhotographerApp/frontend/build/* ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:/PhotographerApp/frontend/
-            scp ./PhotographerApp/backend/main ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:/PhotographerApp/backend/
+            scp -r ./frontend/build/* ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:/PhotographerApp/frontend/
+            scp ./backend/main ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:/PhotographerApp/backend/
 
             ssh ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }} "
               cd /PhotographerApp &&
