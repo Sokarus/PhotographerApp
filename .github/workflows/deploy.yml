@@ -85,7 +85,7 @@ jobs:
             git pull
             docker-compose -f compose.prod.yaml down
 
-            scp -r frontend/build/ ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:/PhotographerApp/frontend
-            scp backend/main ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:/PhotographerApp/backend
+            scp -r frontend/build/ ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:./PhotographerApp/frontend
+            scp backend/main ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:./PhotographerApp/backend
 
             docker-compose -f compose.prod.yaml up -d --build
