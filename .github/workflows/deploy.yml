@@ -67,7 +67,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: frontend-build
-          path: ./PhotographerApp/frontend
+          path: ./PhotographerApp/frontend/build
 
       - name: Download backend build artifacts
         uses: actions/download-artifact@v3
@@ -77,7 +77,7 @@ jobs:
 
       - name: Verify artifacts
         run: |
-          ls -la ./PhotographerApp/frontend
+          ls -la ./PhotographerApp/frontend/build
           ls -la ./PhotographerApp/backend
 
       - name: Deploy to production via SSH
@@ -88,11 +88,14 @@ jobs:
           key: ${{ secrets.PROD_SSH_KEY }}
           port: 22
           script: |
-            cd ./PhotographerApp/
-            git pull
-            docker-compose -f compose.prod.yaml down
+            ls -la ./PhotographerApp/frontend/build/
+            ls -la ./PhotographerApp/backend/
 
-            scp -r frontend/build/ ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:/PhotographerApp/frontend
-            scp backend/main ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:/PhotographerApp/backend
+            scp -r ./PhotographerApp/frontend/build/* ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:/PhotographerApp/frontend/
+            scp ./PhotographerApp/backend/main ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:/PhotographerApp/backend/
 
-            docker-compose -f compose.prod.yaml up -d --build
+            ssh ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }} "
+              cd /PhotographerApp &&
+              docker-compose -f compose.prod.yaml down &&
+              docker-compose -f compose.prod.yaml up -d --build
+            "
