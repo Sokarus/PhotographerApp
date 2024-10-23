@@ -88,13 +88,11 @@ jobs:
           key: ${{ secrets.PROD_SSH_KEY }}
           port: 22
           script: |
-            ssh ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }} "mkdir -p /frontend /backend"
+            ls -la ./frontend/build
+            ls -la ./backend
 
-            ls -la ./frontend/build/
-            ls -la ./backend/
-
-            scp -r ./frontend/build/* ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:/PhotographerApp/frontend/
-            scp ./backend/main ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:/PhotographerApp/backend/
+            scp -r ./frontend/build ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:/PhotographerApp/frontend/
+            scp ./backend ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:/PhotographerApp/backend/
 
             ssh ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }} "
               cd /PhotographerApp &&
