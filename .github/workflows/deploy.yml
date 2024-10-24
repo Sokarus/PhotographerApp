@@ -105,6 +105,7 @@ jobs:
           script: |
             cd ~/PhotographerApp
             rm -rf ./frontend/build
+            mkdir ./frontend/build
             chmod -R 777 ./backend/main
             chmod -R 777 ./frontend/build
             docker-compose -f compose.prod.yaml down
