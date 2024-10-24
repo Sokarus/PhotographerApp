@@ -67,13 +67,11 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: frontend-build
-          path: ./frontend
 
       - name: Download backend build artifacts
         uses: actions/download-artifact@v3
         with:
           name: backend-build
-          path: ./backend
 
       - name: Deploy to production via SSH
         uses: appleboy/ssh-action@master
@@ -83,10 +81,6 @@ jobs:
           key: ${{ secrets.PROD_SSH_KEY }}
           port: 22
           script: |
-            cd /
-
-            ls -la
-
             scp -r ./frontend/build ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:/PhotographerApp/frontend/
             scp ./backend ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:/PhotographerApp/backend/
 
