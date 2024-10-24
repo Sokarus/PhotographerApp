@@ -82,7 +82,7 @@ jobs:
           username: ${{ secrets.PROD_USER }}
           key: ${{ secrets.PROD_SSH_KEY }}
           port: 22
-          source: "./frontend/"
+          source: "./frontend/frontend"
           target: ~/PhotographerApp/frontend/build/
 
       - name: Send backend build to server
