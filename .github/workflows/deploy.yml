@@ -83,7 +83,7 @@ jobs:
           key: ${{ secrets.PROD_SSH_KEY }}
           port: 22
           source: "./frontend"
-          target: ~/PhotographerApp/frontend/build
+          target: ~/PhotographerApp/
 
       - name: Send backend build to server
         uses: appleboy/scp-action@master
