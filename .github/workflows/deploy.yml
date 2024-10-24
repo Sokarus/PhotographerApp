@@ -81,12 +81,10 @@ jobs:
           key: ${{ secrets.PROD_SSH_KEY }}
           port: 22
           script: |
-            cd /home/runner/work/PhotographerApp/PhotographerApp
-
             ls -la
 
-            scp -r /home/runner/work/PhotographerApp/PhotographerApp/frontend/build ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:/PhotographerApp/frontend/
-            scp /home/runner/work/PhotographerApp/PhotographerApp/backend ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:/PhotographerApp/backend/
+            scp -r ./frontend/* ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:/PhotographerApp/frontend/
+            scp -r ./backend/* ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:/PhotographerApp/backend/
 
             ssh ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }} "
               cd /PhotographerApp &&
