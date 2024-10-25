@@ -75,9 +75,6 @@ jobs:
           name: backend-build
           path: ./backend
 
-      - run: ls -la
-      - run: ls -la ./frontend
-
       - name: Send frontend build to server
         uses: appleboy/scp-action@master
         with:
@@ -86,7 +83,7 @@ jobs:
           key: ${{ secrets.PROD_SSH_KEY }}
           port: 22
           source: "./frontend"
-          target: ~/PhotographerApp/frontend
+          target: ~/PhotographerApp/
 
       - name: Send backend build to server
         uses: appleboy/scp-action@master
