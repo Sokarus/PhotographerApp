@@ -2,6 +2,7 @@ package routes
 
 import (
 	"database/sql"
+	"log"
 	"net/http"
 	"photographer-app/models/yandex"
 	"photographer-app/routes/photosession"
@@ -37,13 +38,14 @@ func AuthMiddleware(jwtKey []byte) gin.HandlerFunc {
 		tokenString, err := c.Cookie("authToken")
 
 		if err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Требуется авторизация"})
+			log.Println("Getting auth token error:", err)
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Требуется авторизация"})
 			return
 		}
 
 		if tokenString == "" {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Токен отсутствует"})
-			c.Abort()
+			log.Println("Empty auth token")
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Токен отсутствует"})
 			return
 		}
 
@@ -55,18 +57,18 @@ func AuthMiddleware(jwtKey []byte) gin.HandlerFunc {
 
 		if err != nil {
 			if err == jwt.ErrSignatureInvalid {
-				c.JSON(http.StatusUnauthorized, gin.H{"error": "Неверная подпись токена"})
-				c.Abort()
+				log.Println("Wrong token signature")
+				c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Неверная подпись токена"})
 				return
 			}
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Неверный токен"})
-			c.Abort()
+			log.Println("Wrong token:", err)
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Неверный токен"})
 			return
 		}
 
 		if !token.Valid {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Невалидный токен"})
-			c.Abort()
+			log.Println("Not valid token")
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Невалидный токен"})
 			return
 		}
 
