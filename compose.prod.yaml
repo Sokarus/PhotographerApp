@@ -12,6 +12,7 @@ services:
       - postgres
     networks:
       - app-network
+    restart: always
 
   frontend:
     build:
@@ -22,6 +23,7 @@ services:
       - "3000:3000"
     networks:
       - app-network
+    restart: always
 
   nginx:
     build:
@@ -35,6 +37,7 @@ services:
     depends_on:
       - backend
       - frontend
+    restart: always
 
   postgres:
     image: postgres:14
@@ -49,6 +52,7 @@ services:
       - pgdata:/var/lib/postgresql/data
     networks:
       - app-network
+    restart: always
 
 networks:
   app-network:

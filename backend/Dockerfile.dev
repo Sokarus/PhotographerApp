@@ -3,7 +3,7 @@ FROM golang:1.23
 WORKDIR /app
 
 COPY . .
-COPY .aws /root/
+COPY .aws /root/.aws
 
 RUN go mod tidy
 

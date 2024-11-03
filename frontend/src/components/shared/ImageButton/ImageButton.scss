@@ -1,6 +1,5 @@
 .ImageButtonWrapper {
-  display: flex;
-  flex-direction: row;
-  height: 20px;
-  width: 20px;
+  button {
+    gap: calc(#{var(--space-between)} * 1px);
+  }
 }

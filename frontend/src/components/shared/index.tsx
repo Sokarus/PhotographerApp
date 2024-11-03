@@ -6,3 +6,5 @@ export * from './Modal';
 export * from './Text';
 export * from './TextLink';
 export * from './InputImage';
+export * from './Select';
+export * from './Toggle';

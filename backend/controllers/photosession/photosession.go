@@ -2,13 +2,12 @@ package photosession
 
 import (
 	"database/sql"
-	"log"
 	"mime/multipart"
 	"net/http"
-	pModel "photographer-app/models/photo"
 	psModel "photographer-app/models/photosession"
 	"photographer-app/models/yandex"
-	"sync"
+	pService "photographer-app/services/photo"
+	psService "photographer-app/services/photosession"
 
 	"github.com/gin-gonic/gin"
 )
@@ -18,36 +17,107 @@ type Controller struct {
 	Yandex *yandex.Yandex
 }
 
-type PhotosessionData struct {
+type CreatePhotosessionData struct {
 	Title           string                  `form:"title" binding:"required,min=2"`
 	Path            string                  `form:"path" binding:"required,min=2"`
 	Photos          []*multipart.FileHeader `form:"photos" binding:"required"`
 	PhotosConverted []*multipart.FileHeader `form:"photosConverted" binding:"required"`
 }
 
-func (pc *Controller) CreatePhotosession(c *gin.Context) {
-	photosessionData := getPhotosessionData(c)
+type UpdatePhotosessionData struct {
+}
 
-	if !psModel.CheckUnique(pc.DB, photosessionData.Path) {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "Фотосессия с таким названием уже существует."})
+// PUBLIC METHODS
+
+func CreatePhotosession(c *gin.Context, db *sql.DB, yandex *yandex.Yandex) {
+	data := getCreateData(c)
+	psService := psService.PhotosessionService{
+		DB:     db,
+		Yandex: yandex,
+	}
+
+	if !psService.CheckUnique(data.Path) {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Фотосессия с таким названием уже существует."})
 		return
 	}
 
-	pc.uploadPhotosToYandex(c, photosessionData.Photos, photosessionData.PhotosConverted, photosessionData.Path)
+	err := psService.UploadPhotosToYandex(data.Photos, data.PhotosConverted, data.Path)
 
-	maxPosition, err := psModel.MaxPosition(pc.DB)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "Ошибка, попробуйте позже."})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Ошибка загрузки фото в яндекс облако"})
 		return
 	}
-	photosessionId := pc.createPhotosession(c, photosessionData.Title, photosessionData.Path, maxPosition)
-	pc.createPhotos(c, photosessionData.Photos, photosessionId)
+
+	maxPosition, err := psService.MaxPosition(db)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Ошибка, попробуйте позже."})
+		return
+	}
+	photosessionId, err := psService.CreatePhotosession(data.Title, data.Path, maxPosition)
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Ошибка загрузки фотосессии, попробуйте позже."})
+		return
+	}
+
+	pService := pService.PhotoService{
+		DB: db,
+	}
+	err = pService.CreatePhotos(data.Photos, photosessionId)
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Ошибка загрузки фото, попробуйте позже."})
+		return
+	}
 
 	c.Status(http.StatusCreated)
 }
 
-func getPhotosessionData(c *gin.Context) *PhotosessionData {
-	var photosessionData PhotosessionData
+func List(c *gin.Context, db *sql.DB) {
+	psService := psService.PhotosessionService{
+		DB: db,
+	}
+	list, err := psService.List()
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Ошибка, попробуйте позже."})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": list})
+}
+
+func UpdatePhotosession(c *gin.Context, db *sql.DB) {
+	data := getUpdateData(c)
+	psService := psService.PhotosessionService{
+		DB: db,
+	}
+
+	err := psService.UpdatePhotosession(data)
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Ошибка сохранения фотосессии, попробуйте позже."})
+		return
+	}
+
+	pService := pService.PhotoService{
+		DB: db,
+	}
+
+	err = pService.UpdatePhotos(data.Photos)
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Ошибка сохранения фотосессии, попробуйте позже."})
+		return
+	}
+
+	c.Status(http.StatusOK)
+}
+
+// PRIVATE METHODS
+
+func getCreateData(c *gin.Context) *CreatePhotosessionData {
+	var photosessionData CreatePhotosessionData
 
 	if err := c.ShouldBind(&photosessionData); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Ошибка валидации данных."})
@@ -61,74 +131,13 @@ func getPhotosessionData(c *gin.Context) *PhotosessionData {
 	return &photosessionData
 }
 
-func (pc *Controller) uploadPhotosToYandex(c *gin.Context, photos, photosConverted []*multipart.FileHeader, path string) {
-	var wg sync.WaitGroup
-	var uploadErr error
-	var mu sync.Mutex
+func getUpdateData(c *gin.Context) *psModel.Photosession {
+	var photosessionData psModel.Photosession
 
-	upload := func(photo *multipart.FileHeader, subPath string) {
-		defer wg.Done()
-
-		err := pc.Yandex.UploadPhoto(photo, subPath)
-		if err != nil {
-			log.Println("Upload image to Yandex error:", err)
-			mu.Lock()
-			if uploadErr == nil {
-				uploadErr = err
-			}
-			mu.Unlock()
-		}
+	if err := c.ShouldBindJSON(&photosessionData); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Ошибка валидации данных."})
+		return nil
 	}
 
-	for _, photo := range photos {
-		wg.Add(1)
-		go upload(photo, "photosession/"+path+"/")
-	}
-	for _, photo := range photosConverted {
-		wg.Add(1)
-		go upload(photo, "photosession/"+path+"/")
-	}
-
-	wg.Wait()
-
-	if uploadErr != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Ошибка загрузки фото в яндекс облако"})
-	}
-}
-
-func (pc *Controller) createPhotosession(c *gin.Context, title, folderName string, maxPosition int) int {
-	photosession := psModel.Photosession{
-		Title:      title,
-		FolderName: folderName,
-		Position:   maxPosition + 1,
-		Public:     false,
-		Type:       "portfolio",
-	}
-
-	photosessionId, err := photosession.Create(pc.DB)
-
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Ошибка загрузки фотосессии, попробуйте позже."})
-		return 0
-	}
-
-	return photosessionId
-}
-
-func (pc *Controller) createPhotos(c *gin.Context, photos []*multipart.FileHeader, photosessionId int) {
-	for index, photo := range photos {
-		photoData := pModel.Photo{
-			Name:           photo.Filename,
-			Position:       index,
-			Public:         false,
-			PhotosessionId: photosessionId,
-		}
-
-		err := photoData.Create(pc.DB)
-
-		if err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Ошибка загрузки фото, попробуйте позже."})
-			return
-		}
-	}
+	return &photosessionData
 }

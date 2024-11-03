@@ -13,12 +13,13 @@ func AddPublicRoutes(router *gin.RouterGroup, db *sql.DB, jwtKey []byte) {
 }
 
 func AddPrivateRoutes(router *gin.RouterGroup, db *sql.DB, yandex *yandex.Yandex) {
-	photosessionController := photosession.Controller{
-		DB:     db,
-		Yandex: yandex,
-	}
-
 	router.POST("photosession/create", func(c *gin.Context) {
-		photosessionController.CreatePhotosession(c)
+		photosession.CreatePhotosession(c, db, yandex)
+	})
+	router.GET("photosession/list", func(c *gin.Context) {
+		photosession.List(c, db)
+	})
+	router.POST("photosession/update", func(c *gin.Context) {
+		photosession.UpdatePhotosession(c, db)
 	})
 }

@@ -1,0 +1,41 @@
+.PhotosPreview {
+  &Wrapper {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    gap: 5px;
+    overflow: auto;
+  }
+
+  &Image {
+    &Wrapper {
+      position: relative;
+      background-color: rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+      transition: background-color 1s 0.1s;
+
+      &:hover,
+      &:focus {
+        background-color: rgb(255, 255, 255);
+      }
+
+      img {
+        object-fit: contain;
+        height: 150px;
+        width: auto;
+        margin: 5px;
+        border-radius: 30px;
+      }
+    }
+
+    &Number {
+      background-color: white;
+      border-bottom-right-radius: 20px;
+      width: fit-content;
+      height: fit-content;
+      padding: 5px;
+      position: absolute;
+    }
+  }
+}

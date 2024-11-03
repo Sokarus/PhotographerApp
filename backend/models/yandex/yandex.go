@@ -64,6 +64,7 @@ func (y Yandex) UploadPhoto(fileHeader *multipart.FileHeader, path string) error
 
 	if err != nil {
 		log.Printf("Error loading photo to yandex cloud: %v", err)
+		return err
 	}
 
 	return nil

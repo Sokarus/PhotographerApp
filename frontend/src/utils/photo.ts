@@ -1,4 +1,5 @@
 import imageCompression from 'browser-image-compression';
+import {Url} from '@constant/yandex';
 
 const ConvertPhotosToWebp = async (files: File[]) =>
   Promise.all(
@@ -25,4 +26,10 @@ const ConvertPhotosToWebp = async (files: File[]) =>
     })
   );
 
-export {ConvertPhotosToWebp};
+const PhotoWebpUrl = (photoFolder: string, photoName: string) =>
+  `${Url}photosession/${photoFolder}/${photoName.split('.')[0]}_compressed.webp`;
+
+const PhotoOriginalUrl = (photoFolder: string, photoName: string) =>
+  `${Url}photosession/${photoFolder}/${photoName}`;
+
+export {ConvertPhotosToWebp, PhotoWebpUrl, PhotoOriginalUrl};

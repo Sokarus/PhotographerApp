@@ -1,15 +1,15 @@
-import {Photosession} from '@type/photosession';
 import {Transliterate} from '@utils/string';
 import {ConvertPhotosToWebp} from '@utils/photo';
+import {Photosession} from '@type/photosession';
 
 const PhotosessionsList = async (): Promise<Photosession[]> => {
   return fetch('api/photosession/list', {
     method: 'GET',
   }).then(async (response) => {
     if (response.status === 200) {
-      const photosessionsData: Photosession[] = await response.json();
+      const data: {data: Photosession[]} = await response.json();
 
-      return photosessionsData;
+      return data.data;
     }
 
     throw new Error('Ошибка получения списка фотосессий.');
@@ -43,4 +43,19 @@ const Create = async (title: string, photos: File[]): Promise<boolean> => {
   });
 };
 
-export {PhotosessionsList, Create};
+const Save = async (photosession: Photosession) => {
+  return fetch('api/photosession/update', {
+    method: 'POST',
+    body: JSON.stringify(photosession),
+  }).then(async (response) => {
+    if (response.status === 200) {
+      return true;
+    }
+
+    const errorData = await response.json();
+
+    throw new Error(errorData.message);
+  });
+};
+
+export {PhotosessionsList, Create, Save};

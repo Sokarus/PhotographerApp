@@ -1,16 +1,18 @@
 import React, {ReactNode} from 'react';
 import {Button} from '@shared';
+import './ImageButton.scss';
 
 interface IImageButton {
   url: string;
   alt: string;
-  onClick: () => void;
+  onClick: (...args: any[]) => any;
   children?: ReactNode;
+  spaceBetween?: number;
 }
 
-const ImageButton: React.FC<IImageButton> = ({url, alt, onClick, children}) => {
+const ImageButton: React.FC<IImageButton> = ({url, alt, onClick, children, spaceBetween = 0}) => {
   return (
-    <div className={'ImageButtonWrapper'}>
+    <div style={{'--space-between': spaceBetween} as any} className={'ImageButtonWrapper'}>
       <Button onClick={onClick}>
         <img alt={alt} src={url} width={20} height={20} />
         {children || ''}
