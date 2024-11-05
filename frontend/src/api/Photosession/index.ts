@@ -1,6 +1,6 @@
 import {Transliterate} from '@utils/string';
 import {ConvertPhotosToWebp} from '@utils/photo';
-import {Photosession} from '@type/photosession';
+import {Photosession, PortfolioPhotosession} from '@type/photosession';
 
 const PhotosessionsList = async (): Promise<Photosession[]> => {
   return fetch('api/photosession/list', {
@@ -13,6 +13,20 @@ const PhotosessionsList = async (): Promise<Photosession[]> => {
     }
 
     throw new Error('Ошибка получения списка фотосессий.');
+  });
+};
+
+const Portfolio = async (): Promise<PortfolioPhotosession[]> => {
+  return fetch('oapi/photosession/portfolio', {
+    method: 'GET',
+  }).then(async (response) => {
+    if (response.status === 200) {
+      const data: {data: PortfolioPhotosession[]} = await response.json();
+
+      return data.data;
+    }
+
+    throw new Error('Ошибка получения портфолио.');
   });
 };
 
@@ -58,4 +72,18 @@ const Save = async (photosession: Photosession) => {
   });
 };
 
-export {PhotosessionsList, Create, Save};
+const Get = async (name: string) => {
+  return fetch(`oapi/photosession?name=${name}`, {
+    method: 'GET',
+  }).then(async (response) => {
+    if (response.status === 200) {
+      const data: {data: Photosession} = await response.json();
+
+      return data.data;
+    }
+
+    throw new Error('Ошибка получения фотосессии.');
+  });
+};
+
+export {PhotosessionsList, Create, Save, Portfolio, Get};

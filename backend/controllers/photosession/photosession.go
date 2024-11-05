@@ -87,6 +87,21 @@ func List(c *gin.Context, db *sql.DB) {
 	c.JSON(http.StatusOK, gin.H{"data": list})
 }
 
+func Portfolio(c *gin.Context, db *sql.DB) {
+	psService := psService.PhotosessionService{
+		DB: db,
+	}
+
+	portfolio, err := psService.Portfolio()
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Ошибка, попробуйте позже."})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": portfolio})
+}
+
 func UpdatePhotosession(c *gin.Context, db *sql.DB) {
 	data := getUpdateData(c)
 	psService := psService.PhotosessionService{
@@ -112,6 +127,22 @@ func UpdatePhotosession(c *gin.Context, db *sql.DB) {
 	}
 
 	c.Status(http.StatusOK)
+}
+
+func GetPhotosession(c *gin.Context, db *sql.DB) {
+	name := c.Query("name")
+	psService := psService.PhotosessionService{
+		DB: db,
+	}
+
+	photosession, err := psService.GetPhotosession(name)
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Ошибка получения фотосессии, попробуйте позже."})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": photosession})
 }
 
 // PRIVATE METHODS

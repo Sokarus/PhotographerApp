@@ -22,6 +22,7 @@ func InitRouter(db *sql.DB, jwtKey []byte, yandex *yandex.Yandex, host string) *
 	oapi := router.Group("/oapi/")
 	{
 		user.AddPublicRoutes(oapi, db, jwtKey, host)
+		photosession.AddPublicRoutes(oapi, db)
 	}
 	api := router.Group("/api/")
 	api.Use(AuthMiddleware(jwtKey))

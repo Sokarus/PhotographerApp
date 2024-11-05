@@ -4,3 +4,4 @@ export * from './Header';
 export * from './Home';
 export * from './Portfolio';
 export * from './Pending';
+export * from './Photosession';

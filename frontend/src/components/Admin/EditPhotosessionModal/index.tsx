@@ -2,12 +2,13 @@ import React from 'react';
 import {toast} from 'react-toastify';
 import {BaseModal} from '@type/modal';
 import {Photosession} from '@type/photosession';
-import {Modal, Select, Button, Text, Toggle} from '@shared';
+import {Modal, Select, Button, Text, Toggle, InputText, ImageButton} from '@shared';
 import {PhotosessionsList} from '@api/Photosession';
 import {Photo} from '@type/photo';
 import {ColorTheme} from '@constant/style';
 import {Save} from '@api/Photosession';
 import {Pending} from '@components';
+import {IconUrl} from '@utils/photo';
 import PhotosEdit from '../PhotosEdit';
 import './EditPhotosessionModal.scss';
 
@@ -18,6 +19,8 @@ const EditPhotosessionModal: React.FC<EditPhotosessionNodalParams> = ({isOpened,
   const [photos, setPhotos] = React.useState<Photo[]>([]);
   const [currentPhotosession, setCurrentPhotosession] = React.useState<Photosession>();
   const [isPublish, setIsPublish] = React.useState<boolean>(false);
+  const [isClient, setIsClient] = React.useState<boolean>(false);
+  const [title, setTitle] = React.useState<string>('');
   const [isPending, setIsPending] = React.useState<boolean>(false);
 
   React.useEffect(() => {
@@ -52,6 +55,8 @@ const EditPhotosessionModal: React.FC<EditPhotosessionNodalParams> = ({isOpened,
       setCurrentPhotosession(currentPhotosession);
       setPhotos(currentPhotosession.photos);
       setIsPublish(currentPhotosession.public);
+      setIsClient(currentPhotosession.type === 'client');
+      setTitle(currentPhotosession.title);
     },
     [list]
   );
@@ -63,6 +68,8 @@ const EditPhotosessionModal: React.FC<EditPhotosessionNodalParams> = ({isOpened,
 
     currentPhotosession.photos = photos;
     currentPhotosession.public = isPublish;
+    currentPhotosession.type = isClient ? 'client' : 'portfolio';
+    currentPhotosession.title = title;
 
     try {
       await Save(currentPhotosession);
@@ -72,20 +79,19 @@ const EditPhotosessionModal: React.FC<EditPhotosessionNodalParams> = ({isOpened,
     } finally {
       setPhotos([]);
       setIsPublish(false);
+      setIsClient(false);
+      setTitle('');
+      setCurrentPhotosession(undefined);
       onClose();
     }
-  }, [photos]);
+  }, [photos, currentPhotosession, isPublish, isClient, title]);
 
-  const setPhotoPublish = React.useCallback(
-    (photoIndex: number, publish: boolean) => {
-      if (!currentPhotosession) {
-        return;
-      }
-
-      currentPhotosession.photos[photoIndex].public = publish;
-    },
-    [currentPhotosession]
-  );
+  const copyClientLinkHandler = React.useCallback(() => {
+    navigator.clipboard.writeText(
+      `${window.location.protocol}//${window.location.hostname}/client?name=${currentPhotosession?.folderName}`
+    );
+    toast.success('Ссылка на фотосессию скопирована!');
+  }, [currentPhotosession]);
 
   return (
     <>
@@ -104,15 +110,41 @@ const EditPhotosessionModal: React.FC<EditPhotosessionNodalParams> = ({isOpened,
           />
           {!!photos.length ? (
             <>
-              <div className={'EditPhotosessionModalPublishToggle'}>
+              <div className={'EditPhotosessionModalInput'}>
+                <Text text={'Название фотосессии'} color={ColorTheme.white} size={'large'} />
+                <InputText
+                  text={title}
+                  type={'text'}
+                  color={ColorTheme.white}
+                  placeholder={currentPhotosession?.title}
+                  setText={(event: React.ChangeEvent<HTMLInputElement>) =>
+                    setTitle(event.target.value)
+                  }
+                />
+              </div>
+              <div className={'EditPhotosessionModalToggle'}>
                 <Text text={'Опубликовать'} color={ColorTheme.white} />
                 <Toggle on={isPublish} onClick={() => setIsPublish(!isPublish)} />
               </div>
+              <div className={'EditPhotosessionModalToggle'}>
+                <Text text={'Клиентская'} color={ColorTheme.white} />
+                <Toggle on={isClient} onClick={() => setIsClient(!isClient)} />
+              </div>
+              {isClient ? (
+                <div className={'EditPhotosessionModalClientLink'}>
+                  <Text
+                    text={`${window.location.protocol}//${window.location.hostname}/client?name=${currentPhotosession?.folderName}`}
+                    color={ColorTheme.white}
+                  />
+                  <ImageButton url={IconUrl('copy')} alt={'copy'} onClick={copyClientLinkHandler} />
+                </div>
+              ) : (
+                <></>
+              )}
               <PhotosEdit
                 folderName={currentPhotosession?.folderName || ''}
                 photos={photos}
                 setPhotos={setPhotos}
-                setPublishHandler={setPhotoPublish}
               />
               <Button onClick={saveHandler}>
                 <Text text={'Сохранить'} color={ColorTheme.white} size={'large'} />

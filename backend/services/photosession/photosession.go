@@ -92,7 +92,7 @@ func (ps *PhotosessionService) List() ([]psModel.Photosession, error) {
 		photos, err := photo.GetListByPhotosessionId(ps.DB, p.ID)
 
 		if err != nil {
-			return nil, errors.New("create photosession error")
+			return nil, err
 		}
 
 		pList[index].Photos = photos
@@ -101,6 +101,44 @@ func (ps *PhotosessionService) List() ([]psModel.Photosession, error) {
 	return pList, nil
 }
 
+func (ps *PhotosessionService) Portfolio() ([]psModel.PortfolioPhotosession, error) {
+	portfolioPhotosessions, err := psModel.GetPortfolio(ps.DB)
+
+	if err != nil {
+		return nil, err
+	}
+
+	for index, p := range portfolioPhotosessions {
+		mainPhoto, err := photo.GetMainPhoto(ps.DB, p.ID)
+
+		if err != nil {
+			return nil, err
+		}
+
+		portfolioPhotosessions[index].MainPhoto = mainPhoto
+	}
+
+	return portfolioPhotosessions, nil
+}
+
 func (ps *PhotosessionService) UpdatePhotosession(photosession *psModel.Photosession) error {
 	return photosession.Save(ps.DB)
+}
+
+func (ps *PhotosessionService) GetPhotosession(folderName string) (*psModel.Photosession, error) {
+	photosession, err := psModel.GetByFolderName(ps.DB, folderName)
+
+	if err != nil {
+		return nil, err
+	}
+
+	photos, err := photo.GetListByPhotosessionId(ps.DB, photosession.ID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	photosession.Photos = photos
+
+	return &photosession, nil
 }

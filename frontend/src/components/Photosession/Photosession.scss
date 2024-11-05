@@ -1,0 +1,17 @@
+.Photosession {
+  &Wrapper {
+    display: flex;
+    background-color: black;
+    justify-content: center;
+  }
+
+  &Content {
+    width: 100%;
+    height: auto;
+    padding-top: 200px;
+    padding-bottom: 200px;
+    background-color: black;
+    width: 80vw;
+    min-height: 100vh;
+  }
+}

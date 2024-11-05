@@ -8,3 +8,5 @@ export * from './TextLink';
 export * from './InputImage';
 export * from './Select';
 export * from './Toggle';
+export * from './Gallery';
+export * from './PhotoView';

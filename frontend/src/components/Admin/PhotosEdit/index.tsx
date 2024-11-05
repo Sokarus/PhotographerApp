@@ -1,23 +1,16 @@
 import React from 'react';
 import {Text, ImageButton} from '@shared';
 import {Photo} from '@type/photo';
-import {PhotoWebpUrl} from '@utils/photo';
-import {Url} from '@constant/yandex';
+import {PhotoWebpUrl, IconUrl} from '@utils/photo';
 import './PhotosEdit.scss';
 
 interface PhotosEditProps {
   folderName: string;
   photos: Photo[];
   setPhotos: (photos: Photo[]) => void;
-  setPublishHandler: (photoIndex: number, publish: boolean) => void;
 }
 
-const PhotosEdit: React.FC<PhotosEditProps> = ({
-  folderName,
-  photos,
-  setPhotos,
-  setPublishHandler,
-}) => {
+const PhotosEdit: React.FC<PhotosEditProps> = ({folderName, photos, setPhotos}) => {
   const dragPhotoRef = React.useRef<HTMLImageElement | null>(null);
 
   const dragStartHandler = (event: React.DragEvent<HTMLDivElement>, index: number) => {
@@ -45,13 +38,24 @@ const PhotosEdit: React.FC<PhotosEditProps> = ({
   };
 
   const publishImage = (isPublished: boolean) =>
-    isPublished ? `${Url}icons/published.svg` : `${Url}icons/unpublished.svg`;
+    isPublished ? IconUrl('published') : IconUrl('unpublished');
+
+  const mainImage = (isMain: boolean) => (isMain ? IconUrl('main') : IconUrl('not_main'));
 
   const publishHandler = React.useCallback(
     (photoIndex: number, publish: boolean) => {
-      setPublishHandler(photoIndex, publish);
-      photos[photoIndex].public = publish;
       setPhotos(photos.map((photo, i) => (i === photoIndex ? {...photo, public: publish} : photo)));
+    },
+    [folderName, photos]
+  );
+
+  const mainHandler = React.useCallback(
+    (photoIndex: number, main: boolean) => {
+      setPhotos(
+        photos.map((photo, i) =>
+          i === photoIndex ? {...photo, main: main} : {...photo, main: false}
+        )
+      );
     },
     [folderName, photos]
   );
@@ -70,12 +74,23 @@ const PhotosEdit: React.FC<PhotosEditProps> = ({
           <div className={'PhotosEditImageNumber'}>
             <Text text={index} />
           </div>
-          <img className={'PhotosEditImagePreview'} src={PhotoWebpUrl(folderName, photo.name)} alt={`Uploaded preview ${index}`} />
+          <img
+            className={'PhotosEditImagePreview'}
+            src={PhotoWebpUrl(folderName, photo.name)}
+            alt={`Uploaded preview ${index}`}
+          />
           <div className={'PhotosEditImagePublish'}>
             <ImageButton
               url={publishImage(photo.public)}
               alt={'published'}
               onClick={() => publishHandler(index, !photo.public)}
+            />
+          </div>
+          <div className={'PhotosEditImageMain'}>
+            <ImageButton
+              url={mainImage(photo.main)}
+              alt={'main'}
+              onClick={() => mainHandler(index, !photo.main)}
             />
           </div>
           <img

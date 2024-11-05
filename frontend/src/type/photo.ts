@@ -6,6 +6,7 @@ interface Photo {
   photosessionId: number;
   createdAt: string;
   updatedAt: string;
+  main: boolean;
 }
 
 interface PhotoObject {

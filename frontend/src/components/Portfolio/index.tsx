@@ -1,45 +1,46 @@
 import React from 'react';
 import {toast} from 'react-toastify';
 import {Header} from '@components';
-import {Photosession} from '@type/photosession';
-// import {PhotosessionsList} from '@api/Photosession';
+import {PortfolioPhotosession} from '@type/photosession';
+import {Portfolio as GetPortfolio} from '@api/Photosession';
+import {Gallery} from '@shared';
+import Photosessions from './Photosessions';
 import './Portfolio.scss';
 
-// TODO remove this
-// const mockData = [
-//   {
-//     countPhotos: 5,
-//     mainPhoto: '',
-//     title: 'Первая фотосессия',
-//   },
-//   {
-//     countPhotos: 10,
-//     mainPhoto: '',
-//     title: 'Вторая фотосессия',
-//   },
-//   {
-//     countPhotos: 50,
-//     mainPhoto: '',
-//     title: 'Третяя фотосессия',
-//   },
-// ] as Photosession[];
-
 const Portfolio: React.FC = () => {
-  const [photosessions, setPhotosessions] = React.useState<Photosession[]>([]);
+  const [photosessions, setPhotosessions] = React.useState<PortfolioPhotosession[]>([]);
+  const queryParameters = new URLSearchParams(window.location.search);
+  const name = queryParameters.get('name');
 
-  // React.useEffect(() => {
-  //   PhotosessionsList()
-  //     .then((photosessionsList) => setPhotosessions(photosessionsList))
-  //     .catch((error) => {
-  //       toast.error((error as Error).message);
-  //     });
-  // }, []);
+  React.useEffect(() => {
+    GetPortfolio()
+      .then((portfolioPhotosessions) => setPhotosessions(portfolioPhotosessions))
+      .catch((error) => {
+        toast.error((error as Error).message);
+      });
+  }, []);
 
   return (
     <>
-      <Header />
+      <Header color={'white'} />
       <div className={'PortfolioWrapper'}>
-        <div className={'PortfolioContent'}>{'Work in progressasdas'}</div>
+        <div className={'PortfolioContent'}>
+          <Photosessions photosessions={photosessions} />
+          {/* <Gallery
+            photos={[
+              {
+                src: 'https://storage.yandexcloud.net/kocherovaphoto/photosession/testovaya_fotosessiya/photo_2024-09-06_21-40-48_compressed.webp',
+                width: 200,
+                height: 200,
+              },
+              {
+                src: 'https://storage.yandexcloud.net/kocherovaphoto/photosession/testovaya_fotosessiya/photo_2024-09-06_21-40-54_compressed.webp',
+                width: 200,
+                height: 200,
+              },
+            ]}
+          /> */}
+        </div>
       </div>
     </>
   );

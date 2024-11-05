@@ -9,7 +9,11 @@ import LoginModal from './LoginModal';
 import RegistrationModal from './RegistrationModal';
 import './RightSide.scss';
 
-const RightSide: React.FC = () => {
+interface RightSide {
+  color: 'black' | 'white';
+}
+
+const RightSide: React.FC<RightSide> = ({color}) => {
   const dispatch = useDispatch();
   const [isLoginModalOpened, setIsLoginModalOpened] = React.useState<boolean>(false);
   const [isRegistrationModalOpened, setIsRegistrationModalOpened] = React.useState<boolean>(false);
@@ -31,11 +35,17 @@ const RightSide: React.FC = () => {
     <div className={'RightSideWrapper'}>
       {!login ? (
         <>
-          <TextLink text={'Войти'} onClick={() => setIsLoginModalOpened(true)} textSize={'large'} />
+          <TextLink
+            text={'Войти'}
+            onClick={() => setIsLoginModalOpened(true)}
+            textSize={'large'}
+            color={color}
+          />
           <TextLink
             text={'Регистрация'}
             onClick={() => setIsRegistrationModalOpened(true)}
             textSize={'large'}
+            color={color}
           />
           <LoginModal isOpened={isLoginModalOpened} onClose={() => setIsLoginModalOpened(false)} />
           <RegistrationModal
@@ -45,8 +55,8 @@ const RightSide: React.FC = () => {
         </>
       ) : (
         <div className={'RightSideGreeting'}>
-          <Text text={`Приветствую, ${login}`} size={'large'} />
-          <TextLink text={'Выход'} onClick={logoutHandler} textSize={'large'} />
+          <Text text={`Приветствую, ${login}`} size={'large'} color={color} />
+          <TextLink text={'Выход'} onClick={logoutHandler} textSize={'large'} color={color} />
         </div>
       )}
     </div>

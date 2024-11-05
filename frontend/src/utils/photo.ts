@@ -32,4 +32,6 @@ const PhotoWebpUrl = (photoFolder: string, photoName: string) =>
 const PhotoOriginalUrl = (photoFolder: string, photoName: string) =>
   `${Url}photosession/${photoFolder}/${photoName}`;
 
-export {ConvertPhotosToWebp, PhotoWebpUrl, PhotoOriginalUrl};
+const IconUrl = (iconName: string) => `${Url}icons/${iconName}.svg`;
+
+export {ConvertPhotosToWebp, PhotoWebpUrl, PhotoOriginalUrl, IconUrl};

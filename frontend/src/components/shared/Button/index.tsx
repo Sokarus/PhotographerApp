@@ -4,11 +4,12 @@ import './Button.scss';
 interface IButton {
   onClick: () => void;
   children: ReactNode;
+  style?: 'default' | 'photo';
 }
 
-const Button: React.FC<IButton> = ({onClick, children}) => {
+const Button: React.FC<IButton> = ({onClick, children, style = 'default'}) => {
   return (
-    <button className={'ButtonWrapper'} onClick={onClick}>
+    <button className={style === 'photo' ? 'ButtonPhoto' : 'ButtonDefault'} onClick={onClick}>
       {children}
     </button>
   );

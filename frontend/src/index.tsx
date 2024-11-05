@@ -4,9 +4,10 @@ import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
 import {Provider} from 'react-redux';
 import {ToastContainer} from 'react-toastify';
 import store from '@state/index';
-import {Home, Admin, Auth, Portfolio} from '@components';
+import {Home, Admin, Auth, Portfolio, Photosession} from '@components';
 import './index.css';
 import 'react-toastify/dist/ReactToastify.css';
+import 'react-photo-album/rows.css';
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 
@@ -21,6 +22,7 @@ root.render(
           <Route path="/ticket" element={<Home />} />
           <Route path="/about" element={<Home />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/photosession" element={<Photosession />} />
         </Routes>
       </Auth>
     </Router>

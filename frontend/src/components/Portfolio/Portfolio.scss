@@ -2,15 +2,16 @@
   &Wrapper {
     display: flex;
     flex-direction: column;
-    background-color: white;
     height: 100vh;
     width: 100%;
+    background-color: black;
   }
 
   &Content {
     display: flex;
     flex-direction: column;
-    padding-top: 70px;
+    padding-top: 200px;
     align-items: center;
+    background-color: black;
   }
 }

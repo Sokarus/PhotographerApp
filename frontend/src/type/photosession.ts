@@ -12,4 +12,11 @@ interface Photosession {
   photos: Photo[];
 }
 
-export {type Photosession};
+interface PortfolioPhotosession {
+  id: number;
+  title: string;
+  folderName: string;
+  mainPhoto: string;
+}
+
+export {type Photosession, type PortfolioPhotosession};

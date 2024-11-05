@@ -20,6 +20,14 @@ type Photosession struct {
 	Photos     []*photo.Photo `json:"photos"`
 }
 
+type PortfolioPhotosession struct {
+	ID         int    `json:"id"`
+	Title      string `json:"title"`
+	FolderName string `json:"folderName"`
+	Position   int    `json:"position"`
+	MainPhoto  string `json:"mainPhoto"`
+}
+
 func (p *Photosession) Create(db *sql.DB) (int, error) {
 	var id int
 	query := "insert into photosessions (title, folder_name, position, public, type) values ($1, $2, $3, $4, $5) returning id"
@@ -81,7 +89,7 @@ func GetIdByFolderName(db *sql.DB, folderName string) int {
 }
 
 func GetList(db *sql.DB) ([]Photosession, error) {
-	query := "select id, title, folder_name, position, public, type, created_at, updated_at from photosessions"
+	query := "select id, title, folder_name, position, public, type, created_at, updated_at from photosessions order by position desc"
 	rows, err := db.Query(query)
 
 	if err != nil {
@@ -102,4 +110,49 @@ func GetList(db *sql.DB) ([]Photosession, error) {
 	}
 
 	return list, nil
+}
+
+func GetPortfolio(db *sql.DB) ([]PortfolioPhotosession, error) {
+	query := `
+		select id, title, folder_name, position 
+		from photosessions
+		where public is true
+		order by position desc`
+	rows, err := db.Query(query)
+
+	if err != nil {
+		log.Println("db get portfolio error:")
+		return nil, errors.New("db request error")
+	}
+	defer rows.Close()
+
+	var list []PortfolioPhotosession
+	for rows.Next() {
+		p := PortfolioPhotosession{}
+
+		if err := rows.Scan(&p.ID, &p.Title, &p.FolderName, &p.Position); err != nil {
+			return nil, errors.New("db scan error")
+		}
+
+		list = append(list, p)
+	}
+
+	return list, nil
+}
+
+func GetByFolderName(db *sql.DB, folderName string) (Photosession, error) {
+	p := Photosession{}
+	query := `
+		select id, title, folder_name 
+		from photosessions 
+		where folder_name = $1`
+
+	err := db.QueryRow(query, folderName).Scan(&p.ID, &p.Title, &p.FolderName)
+
+	if err != nil {
+		log.Println("Db get photosession by folder name error:", err)
+		return p, err
+	}
+
+	return p, nil
 }
