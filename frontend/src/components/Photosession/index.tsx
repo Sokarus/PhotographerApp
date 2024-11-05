@@ -83,35 +83,27 @@ const Photosession: React.FC = () => {
     [photosession]
   );
 
-  const onLeftClickHandler = React.useCallback(() => {
-    if (!photosession || !currentPhotoIndex) {
-      return;
-    }
+  const onPhotoViewChangeHandler = React.useCallback(
+    (side: string) => {
+      const step = side === 'left' ? -1 : 1;
 
-    const photo = photosession.photos?.find((photo) => photo.position === currentPhotoIndex - 1);
+      if (!photosession) {
+        return;
+      }
 
-    if (!photo) {
-      return;
-    }
+      const photo = photosession.photos?.find(
+        (photo) => photo.position === currentPhotoIndex + step
+      );
 
-    setPhotoViewUrl(PhotoOriginalUrl(photosession.folderName, photo.name));
-    setCurrentPhotoIndex(currentPhotoIndex - 1);
-  }, [photosession, currentPhotoIndex]);
+      if (!photo) {
+        return;
+      }
 
-  const onRightClickHandler = React.useCallback(() => {
-    if (!photosession || !currentPhotoIndex) {
-      return;
-    }
-
-    const photo = photosession.photos?.find((photo) => photo.position === currentPhotoIndex + 1);
-
-    if (!photo) {
-      return;
-    }
-
-    setPhotoViewUrl(PhotoOriginalUrl(photosession.folderName, photo.name));
-    setCurrentPhotoIndex(currentPhotoIndex + 1);
-  }, [photosession, currentPhotoIndex]);
+      setPhotoViewUrl(PhotoOriginalUrl(photosession.folderName, photo.name));
+      setCurrentPhotoIndex(currentPhotoIndex + step);
+    },
+    [photosession, currentPhotoIndex]
+  );
 
   return (
     <>
@@ -119,8 +111,8 @@ const Photosession: React.FC = () => {
       <PhotoView
         url={photoViewUrl}
         onClose={() => setPhotoViewUrl('')}
-        onLeftClick={onLeftClickHandler}
-        onRightClick={onRightClickHandler}
+        onLeftClick={() => onPhotoViewChangeHandler('left')}
+        onRightClick={() => onPhotoViewChangeHandler('right')}
       />
       <div className={'PhotosessionWrapper'}>
         <div className={'PhotosessionContent'}>

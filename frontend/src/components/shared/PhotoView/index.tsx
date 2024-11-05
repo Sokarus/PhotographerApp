@@ -1,5 +1,6 @@
 import React from 'react';
-import {Text, ImageButton} from '@shared';
+import {ImageButton} from '@shared';
+import {IconUrl} from '@utils/photo';
 import './PhotoView.scss';
 
 interface PhotoViewProps {
@@ -10,6 +11,23 @@ interface PhotoViewProps {
 }
 
 const PhotoView: React.FC<PhotoViewProps> = ({url, onClose, onLeftClick, onRightClick}) => {
+  const [imageLoaded, setImageLoaded] = React.useState<boolean>(false);
+
+  React.useEffect(() => {
+    if (!url) {
+      return;
+    }
+
+    setImageLoaded(false);
+
+    const img = new Image();
+    img.src = url;
+
+    img.onload = async () => {
+      setImageLoaded(true);
+    };
+  }, [url]);
+
   return url ? (
     <div className={'PhotoView'}>
       <div className={'PhotoViewClose'}>
@@ -25,7 +43,18 @@ const PhotoView: React.FC<PhotoViewProps> = ({url, onClose, onLeftClick, onRight
       <div className={'PhotoViewRight'} onClick={onRightClick}>
         <div className={'PhotoViewRightLight'} />
       </div>
-      <img className={'PhotoViewImage'} src={url} onClick={onClose} />
+      {imageLoaded ? (
+        <img className={'PhotoViewImage'} src={url} onClick={onClose} />
+      ) : (
+        <div className={'PhotoViewPending'}>
+          <img
+            className={'PhotoViewPendingImage'}
+            width={50}
+            height={50}
+            src={IconUrl('pending_white')}
+          />
+        </div>
+      )}
     </div>
   ) : (
     <></>
