@@ -1,11 +1,11 @@
 import React from 'react';
 import {toast} from 'react-toastify';
 import {Photo} from 'react-photo-album';
-import {Header} from '@components';
 import {Photosession as PhotosessionType} from '@type/photosession';
 import {Get} from '@api/Photosession';
 import {Gallery, PhotoView} from '@shared';
 import {PhotoWebpUrl, PhotoOriginalUrl} from '@utils/photo';
+import {Header} from 'components/Header';
 import './Photosession.scss';
 
 const Photosession: React.FC = () => {
@@ -29,7 +29,7 @@ const Photosession: React.FC = () => {
   }, [name]);
 
   const loadPhotos = React.useCallback(async () => {
-    if (!photosession) {
+    if (!photosession || !photosession.photos) {
       return [];
     }
 
@@ -108,6 +108,7 @@ const Photosession: React.FC = () => {
   return (
     <>
       <Header color={'white'} />
+      {/* {photosession?.type === 'portfolio' ? <Header color={'white'} /> : <></>} */}
       <PhotoView
         url={photoViewUrl}
         onClose={() => setPhotoViewUrl('')}

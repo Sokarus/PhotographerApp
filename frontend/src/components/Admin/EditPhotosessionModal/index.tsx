@@ -2,13 +2,14 @@ import React from 'react';
 import {toast} from 'react-toastify';
 import {BaseModal} from '@type/modal';
 import {Photosession} from '@type/photosession';
-import {Modal, Select, Button, Text, Toggle, InputText, ImageButton} from '@shared';
+import {Modal, Select, Button, Text, Toggle, InputText, ImageButton, InputDate} from '@shared';
 import {PhotosessionsList} from '@api/Photosession';
 import {Photo} from '@type/photo';
 import {ColorTheme} from '@constant/style';
 import {Save} from '@api/Photosession';
 import {Pending} from '@components';
 import {IconUrl} from '@utils/photo';
+import {CurrentDate, GetDateBeforeDays} from '@utils/date';
 import PhotosEdit from '../PhotosEdit';
 import './EditPhotosessionModal.scss';
 
@@ -22,6 +23,7 @@ const EditPhotosessionModal: React.FC<EditPhotosessionNodalParams> = ({isOpened,
   const [isClient, setIsClient] = React.useState<boolean>(false);
   const [title, setTitle] = React.useState<string>('');
   const [isPending, setIsPending] = React.useState<boolean>(false);
+  const [date, setDate] = React.useState<string>('');
 
   React.useEffect(() => {
     if (!isOpened) {
@@ -53,7 +55,7 @@ const EditPhotosessionModal: React.FC<EditPhotosessionNodalParams> = ({isOpened,
       }
 
       setCurrentPhotosession(currentPhotosession);
-      setPhotos(currentPhotosession.photos);
+      setPhotos(currentPhotosession.photos || []);
       setIsPublish(currentPhotosession.public);
       setIsClient(currentPhotosession.type === 'client');
       setTitle(currentPhotosession.title);
@@ -84,15 +86,15 @@ const EditPhotosessionModal: React.FC<EditPhotosessionNodalParams> = ({isOpened,
       setCurrentPhotosession(undefined);
       onClose();
     }
-  }, [photos, currentPhotosession, isPublish, isClient, title]);
+  }, [photos, currentPhotosession, isPublish, isClient, title, onClose]);
 
   const copyClientLinkHandler = React.useCallback(() => {
     navigator.clipboard.writeText(
-      `${window.location.protocol}//${window.location.hostname}/client?name=${currentPhotosession?.folderName}`
+      `${window.location.protocol}//${window.location.hostname}/photosession?name=${currentPhotosession?.folderName}`
     );
     toast.success('Ссылка на фотосессию скопирована!');
   }, [currentPhotosession]);
-
+  console.log(currentPhotosession);
   return (
     <>
       <Modal
@@ -101,6 +103,7 @@ const EditPhotosessionModal: React.FC<EditPhotosessionNodalParams> = ({isOpened,
         onClose={onClose}
         backgroundBlur={1}
         fullWindow
+        onPressEnter={saveHandler}
       >
         <div className={'EditPhotosessionModalWrapper'}>
           <Select
@@ -131,13 +134,25 @@ const EditPhotosessionModal: React.FC<EditPhotosessionNodalParams> = ({isOpened,
                 <Toggle on={isClient} onClick={() => setIsClient(!isClient)} />
               </div>
               {isClient ? (
-                <div className={'EditPhotosessionModalClientLink'}>
-                  <Text
-                    text={`${window.location.protocol}//${window.location.hostname}/client?name=${currentPhotosession?.folderName}`}
-                    color={ColorTheme.white}
+                <>
+                  <div className={'EditPhotosessionModalClientLink'}>
+                    <Text
+                      text={`${window.location.protocol}//${window.location.hostname}/photosession?name=${currentPhotosession?.folderName}`}
+                      color={ColorTheme.white}
+                    />
+                    <ImageButton
+                      url={IconUrl('copy')}
+                      alt={'copy'}
+                      onClick={copyClientLinkHandler}
+                    />
+                  </div>
+                  <InputDate
+                    date={date}
+                    setDate={setDate}
+                    minDate={GetDateBeforeDays(30)}
+                    maxDate={CurrentDate()}
                   />
-                  <ImageButton url={IconUrl('copy')} alt={'copy'} onClick={copyClientLinkHandler} />
-                </div>
+                </>
               ) : (
                 <></>
               )}

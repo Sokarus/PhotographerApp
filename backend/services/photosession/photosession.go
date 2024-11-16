@@ -89,7 +89,7 @@ func (ps *PhotosessionService) List() ([]psModel.Photosession, error) {
 	}
 
 	for index, p := range pList {
-		photos, err := photo.GetListByPhotosessionId(ps.DB, p.ID)
+		photos, err := photo.GetListByPhotosessionId(ps.DB, p.ID, false)
 
 		if err != nil {
 			return nil, err
@@ -132,7 +132,7 @@ func (ps *PhotosessionService) GetPhotosession(folderName string) (*psModel.Phot
 		return nil, err
 	}
 
-	photos, err := photo.GetListByPhotosessionId(ps.DB, photosession.ID)
+	photos, err := photo.GetListByPhotosessionId(ps.DB, photosession.ID, true)
 
 	if err != nil {
 		return nil, err

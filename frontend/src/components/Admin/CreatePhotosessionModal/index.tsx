@@ -39,7 +39,7 @@ const CreatePhotosessionModal: React.FC<ICreatePhotosessionModal> = ({isOpened, 
       setTitle('');
       onClose();
     }
-  }, [title, photos]);
+  }, [title, photos, onClose]);
 
   const photoUploadHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -60,6 +60,7 @@ const CreatePhotosessionModal: React.FC<ICreatePhotosessionModal> = ({isOpened, 
         onClose={onClose}
         backgroundBlur={1}
         fullWindow
+        onPressEnter={createHandler}
       >
         <div className={'CreatePhotosessionModalWrapper'}>
           <div className={'CreatePhotosessionModalInput'}>

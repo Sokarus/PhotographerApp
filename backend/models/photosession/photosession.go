@@ -143,11 +143,11 @@ func GetPortfolio(db *sql.DB) ([]PortfolioPhotosession, error) {
 func GetByFolderName(db *sql.DB, folderName string) (Photosession, error) {
 	p := Photosession{}
 	query := `
-		select id, title, folder_name 
+		select id, title, folder_name, type
 		from photosessions 
 		where folder_name = $1`
 
-	err := db.QueryRow(query, folderName).Scan(&p.ID, &p.Title, &p.FolderName)
+	err := db.QueryRow(query, folderName).Scan(&p.ID, &p.Title, &p.FolderName, &p.Type)
 
 	if err != nil {
 		log.Println("Db get photosession by folder name error:", err)

@@ -52,10 +52,10 @@ const RegistrationModal: React.FC<IRegistrationModal> = ({isOpened, onClose}) =>
     } catch (error) {
       toast.error((error as Error).message);
     }
-  }, [login, email, password]);
+  }, [login, email, password, dispatch, onClose, validateRegistration]);
 
   return (
-    <Modal isOpened={isOpened} onClose={onClose}>
+    <Modal isOpened={isOpened} onClose={onClose} onPressEnter={registrationHandler}>
       <div className={'RegistrationModalWrapper'}>
         <div className={'RegistrationModalInput'}>
           <Text text={'Логин'} color={ColorTheme.white} />

@@ -2,13 +2,13 @@
   justify-items: center;
 
   &Image {
-    height: 200px;
+    height: 300px;
     transition: box-shadow 0.2s 0.1s;
     transition: height 0.6s 0.1s;
 
     &:hover {
       box-shadow: 0px 20px 20px 6px rgba(255, 255, 255, 0.3);
-      height: 260px;
+      height: 350px;
     }
   }
 

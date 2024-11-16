@@ -3,7 +3,7 @@ wsl --shutdown
 
 cd /mnt/c/Users/Sokar/Desktop/Projects/PhotographerApp/
 
-migrate create -ext sql -dir migrations -seq update_photos_table
+migrate create -ext sql -dir migrations -seq update_photosessions_table
 
 migrate -path ./migrations -database "postgres://postgres:secret@localhost:5432/photographer?sslmode=disable" up
 migrate -path ./migrations -database "postgres://postgres:secret@localhost:5432/photographer?sslmode=disable" force 1

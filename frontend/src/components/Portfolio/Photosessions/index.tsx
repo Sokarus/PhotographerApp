@@ -1,6 +1,6 @@
 import React from 'react';
 import {PortfolioPhotosession} from '@type/photosession';
-import Photosession from '../Photosession/Photosession';
+import Photosession from '../Photosession';
 import './Photosessions.scss';
 
 interface PhotosessionsProps {

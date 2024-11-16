@@ -10,3 +10,4 @@ export * from './Select';
 export * from './Toggle';
 export * from './Gallery';
 export * from './PhotoView';
+export * from './InputDate';

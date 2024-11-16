@@ -45,13 +45,14 @@ func (p *Photo) Update(db *sql.DB) error {
 	return nil
 }
 
-func GetListByPhotosessionId(db *sql.DB, photosessionId int) ([]*Photo, error) {
+func GetListByPhotosessionId(db *sql.DB, photosessionId int, public bool) ([]*Photo, error) {
 	query := `
 		select id, name, position, public, photosession_id, created_at, updated_at, main
 		from photos
 		where photosession_id = $1
+		and public = $2
 		order by position asc`
-	rows, err := db.Query(query, photosessionId)
+	rows, err := db.Query(query, photosessionId, public)
 
 	if err != nil {
 		log.Println("Db get photos by photosession id error:", err)

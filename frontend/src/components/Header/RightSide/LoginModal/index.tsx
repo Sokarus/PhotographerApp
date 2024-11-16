@@ -47,10 +47,10 @@ const LoginModal: React.FC<ILoginModal> = ({isOpened, onClose}) => {
     } catch (error) {
       toast.error((error as Error).message);
     }
-  }, [login, password]);
+  }, [login, password, dispatch, onClose, validateAuth]);
 
   return (
-    <Modal isOpened={isOpened} onClose={onClose}>
+    <Modal isOpened={isOpened} onClose={onClose} onPressEnter={loginHandler}>
       <div className={'LoginModalWrapper'}>
         <div className={'LoginModalInput'}>
           <Text text={'Логин'} color={ColorTheme.white} size={'large'} />

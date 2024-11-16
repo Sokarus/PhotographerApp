@@ -10,6 +10,7 @@ interface IModal {
   backgroundBlur?: number;
   fullWindow?: boolean;
   onClose: () => void;
+  onPressEnter: () => any;
 }
 
 const Modal: React.FC<IModal> = ({
@@ -19,7 +20,26 @@ const Modal: React.FC<IModal> = ({
   backgroundBlur = 0.2,
   fullWindow = false,
   onClose,
+  onPressEnter,
 }) => {
+  React.useEffect(() => {
+    if (!isOpened) {
+      return;
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Enter') {
+        onPressEnter();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpened, onPressEnter]);
+
   return isOpened ? (
     <div
       style={
@@ -33,7 +53,11 @@ const Modal: React.FC<IModal> = ({
       <div className={`ModalWindowWrapper ${fullWindow ? 'ModalWindowFull' : ''}`}>
         <div className={'ModalWindowHeaderWrapper'}>
           {title && <Text text={title} color={ColorTheme.white} size={'large'} />}
-          <ImageButton url={'https://storage.yandexcloud.net/kocherovaphoto/icons/close.svg'} alt={'close'} onClick={onClose} />
+          <ImageButton
+            url={'https://storage.yandexcloud.net/kocherovaphoto/icons/close.svg'}
+            alt={'close'}
+            onClick={onClose}
+          />
         </div>
         {children}
       </div>
