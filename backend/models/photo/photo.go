@@ -15,6 +15,7 @@ type Photo struct {
 	CreatedAt      string `json:"createdAt"`
 	UpdatedAt      string `json:"updatedAt"`
 	Main           bool   `json:"main"`
+	Head           bool   `json:"head"`
 }
 
 func (p *Photo) Create(db *sql.DB) error {
@@ -33,9 +34,9 @@ func (p *Photo) Create(db *sql.DB) error {
 func (p *Photo) Update(db *sql.DB) error {
 	query := `
 		update photos
-		set (position, public, main, updated_at) = ($1, $2, $3, now())
-		where id = $4`
-	_, err := db.Exec(query, p.Position, p.Public, p.Main, p.ID)
+		set (position, public, main, updated_at, head) = ($1, $2, $3, now(), $4)
+		where id = $5`
+	_, err := db.Exec(query, p.Position, p.Public, p.Main, p.Head, p.ID)
 
 	if err != nil {
 		log.Println("Update photo error:", err)
@@ -46,13 +47,26 @@ func (p *Photo) Update(db *sql.DB) error {
 }
 
 func GetListByPhotosessionId(db *sql.DB, photosessionId int, public bool) ([]*Photo, error) {
-	query := `
-		select id, name, position, public, photosession_id, created_at, updated_at, main
-		from photos
-		where photosession_id = $1
-		and public = $2
-		order by position asc`
-	rows, err := db.Query(query, photosessionId, public)
+	var query string
+	var rows *sql.Rows
+	var err error
+
+	if public {
+		query = `
+			select id, name, position, public, photosession_id, created_at, updated_at, main, head
+			from photos
+			where photosession_id = $1
+			and public = true
+			order by position asc`
+		rows, err = db.Query(query, photosessionId)
+	} else {
+		query = `
+			select id, name, position, public, photosession_id, created_at, updated_at, main, head
+			from photos
+			where photosession_id = $1
+			order by position asc`
+		rows, err = db.Query(query, photosessionId)
+	}
 
 	if err != nil {
 		log.Println("Db get photos by photosession id error:", err)
@@ -64,7 +78,7 @@ func GetListByPhotosessionId(db *sql.DB, photosessionId int, public bool) ([]*Ph
 	for rows.Next() {
 		p := Photo{}
 
-		if err := rows.Scan(&p.ID, &p.Name, &p.Position, &p.Public, &p.PhotosessionId, &p.CreatedAt, &p.UpdatedAt, &p.Main); err != nil {
+		if err := rows.Scan(&p.ID, &p.Name, &p.Position, &p.Public, &p.PhotosessionId, &p.CreatedAt, &p.UpdatedAt, &p.Main, &p.Head); err != nil {
 			log.Println("Db scan photos by photosession id error:", err)
 			return nil, errors.New("db scan error")
 		}

@@ -1,7 +1,7 @@
 import {Role} from '@type/user';
 
 const Registration = async (login: string, email: string, password: string): Promise<string> => {
-  return fetch('oapi/user/registration', {
+  return fetch('/oapi/user/registration', {
     method: 'POST',
     body: JSON.stringify({login, email, password}),
   }).then(async (response) => {
@@ -16,7 +16,7 @@ const Registration = async (login: string, email: string, password: string): Pro
 };
 
 const Login = async (login: string, password: string): Promise<boolean> => {
-  return fetch('oapi/user/login', {
+  return fetch('/oapi/user/login', {
     method: 'POST',
     body: JSON.stringify({login, password}),
   }).then(async (response) => {
@@ -36,7 +36,7 @@ interface IUserData {
 }
 
 const UserData = async (): Promise<IUserData> => {
-  return fetch('api/user/data', {
+  return fetch('/api/user/data', {
     method: 'GET',
     credentials: 'include',
   }).then(async (response) => {
@@ -67,7 +67,7 @@ const UserData = async (): Promise<IUserData> => {
 };
 
 const Logout = async () => {
-  return await fetch('api/user/logout', {
+  return await fetch('/api/user/logout', {
     method: 'POST',
   });
 };

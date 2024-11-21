@@ -7,6 +7,7 @@ interface Photo {
   createdAt: string;
   updatedAt: string;
   main: boolean;
+  head: boolean;
 }
 
 interface PhotoObject {

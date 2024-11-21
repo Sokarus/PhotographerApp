@@ -3,7 +3,7 @@ import {ConvertPhotosToWebp} from '@utils/photo';
 import {Photosession, PortfolioPhotosession} from '@type/photosession';
 
 const PhotosessionsList = async (): Promise<Photosession[]> => {
-  return fetch('api/photosession/list', {
+  return fetch('/api/photosession/list', {
     method: 'GET',
   }).then(async (response) => {
     if (response.status === 200) {
@@ -17,7 +17,7 @@ const PhotosessionsList = async (): Promise<Photosession[]> => {
 };
 
 const Portfolio = async (): Promise<PortfolioPhotosession[]> => {
-  return fetch('oapi/photosession/portfolio', {
+  return fetch('/oapi/photosession/portfolio', {
     method: 'GET',
   }).then(async (response) => {
     if (response.status === 200) {
@@ -43,7 +43,7 @@ const Create = async (title: string, photos: File[]): Promise<boolean> => {
   formData.append('title', title);
   formData.append('path', Transliterate(title));
 
-  return fetch('api/photosession/create', {
+  return fetch('/api/photosession/create', {
     method: 'POST',
     body: formData,
   }).then(async (response) => {
@@ -58,7 +58,7 @@ const Create = async (title: string, photos: File[]): Promise<boolean> => {
 };
 
 const Save = async (photosession: Photosession) => {
-  return fetch('api/photosession/update', {
+  return fetch('/api/photosession/update', {
     method: 'POST',
     body: JSON.stringify(photosession),
   }).then(async (response) => {
@@ -73,7 +73,7 @@ const Save = async (photosession: Photosession) => {
 };
 
 const Get = async (name: string) => {
-  return fetch(`oapi/photosession?name=${name}`, {
+  return fetch(`/oapi/photosession?name=${name}`, {
     method: 'GET',
   }).then(async (response) => {
     if (response.status === 200) {

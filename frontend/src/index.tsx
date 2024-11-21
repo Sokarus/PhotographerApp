@@ -22,7 +22,8 @@ root.render(
           <Route path="/ticket" element={<Home />} />
           <Route path="/about" element={<Home />} />
           <Route path="/admin" element={<Admin />} />
-          <Route path="/photosession" element={<Photosession />} />
+          <Route path="/portfolio/photosession" element={<Photosession />} />
+          <Route path="/client/photosession" element={<Photosession />} />
         </Routes>
       </Auth>
     </Router>

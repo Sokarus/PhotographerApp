@@ -10,6 +10,7 @@ interface Photosession {
   createdAt: string;
   updatedAt: string;
   photos: Photo[];
+  date: string;
 }
 
 interface PortfolioPhotosession {

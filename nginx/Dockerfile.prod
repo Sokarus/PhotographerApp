@@ -2,4 +2,5 @@ FROM nginx:stable-alpine
 
 RUN rm /etc/nginx/conf.d/default.conf
 ADD ./prod/nginx.conf /etc/nginx/conf.d/nginx.conf
+COPY /etc/letsencrypt/live/kocherova-photo.site/ /etc/nginx/ssl/
 CMD ["nginx-debug", "-g", "daemon off;"]

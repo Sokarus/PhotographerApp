@@ -9,7 +9,7 @@ import {ColorTheme} from '@constant/style';
 import {Save} from '@api/Photosession';
 import {Pending} from '@components';
 import {IconUrl} from '@utils/photo';
-import {CurrentDate, GetDateBeforeDays} from '@utils/date';
+import {CurrentDate, GetDateBeforeDays, FormatDate} from '@utils/date';
 import PhotosEdit from '../PhotosEdit';
 import './EditPhotosessionModal.scss';
 
@@ -59,6 +59,7 @@ const EditPhotosessionModal: React.FC<EditPhotosessionNodalParams> = ({isOpened,
       setIsPublish(currentPhotosession.public);
       setIsClient(currentPhotosession.type === 'client');
       setTitle(currentPhotosession.title);
+      setDate(FormatDate(currentPhotosession.date));
     },
     [list]
   );
@@ -72,6 +73,26 @@ const EditPhotosessionModal: React.FC<EditPhotosessionNodalParams> = ({isOpened,
     currentPhotosession.public = isPublish;
     currentPhotosession.type = isClient ? 'client' : 'portfolio';
     currentPhotosession.title = title;
+    currentPhotosession.date = date;
+
+    if (currentPhotosession.type === 'client') {
+      if (!currentPhotosession.date || currentPhotosession.date === '1970-01-01') {
+        toast.error('Нужно выбрать дату!');
+        return;
+      }
+
+      let hasHeadPhoto = false;
+      photos.forEach((photo) => {
+        if (photo.head) {
+          hasHeadPhoto = true;
+        }
+      });
+
+      if (!hasHeadPhoto) {
+        toast.error('Нужно выбрать титульное фото!');
+        return;
+      }
+    }
 
     try {
       await Save(currentPhotosession);
@@ -84,17 +105,24 @@ const EditPhotosessionModal: React.FC<EditPhotosessionNodalParams> = ({isOpened,
       setIsClient(false);
       setTitle('');
       setCurrentPhotosession(undefined);
+      setDate('');
       onClose();
     }
-  }, [photos, currentPhotosession, isPublish, isClient, title, onClose]);
+  }, [photos, currentPhotosession, isPublish, isClient, title, onClose, date]);
 
   const copyClientLinkHandler = React.useCallback(() => {
     navigator.clipboard.writeText(
-      `${window.location.protocol}//${window.location.hostname}/photosession?name=${currentPhotosession?.folderName}`
+      `${window.location.protocol}//${window.location.hostname}/client/photosession?name=${currentPhotosession?.folderName}`
     );
     toast.success('Ссылка на фотосессию скопирована!');
   }, [currentPhotosession]);
-  console.log(currentPhotosession);
+
+  React.useEffect(() => {
+    if (!isClient) {
+      setDate('');
+    }
+  }, [isClient, setDate]);
+
   return (
     <>
       <Modal
@@ -137,7 +165,7 @@ const EditPhotosessionModal: React.FC<EditPhotosessionNodalParams> = ({isOpened,
                 <>
                   <div className={'EditPhotosessionModalClientLink'}>
                     <Text
-                      text={`${window.location.protocol}//${window.location.hostname}/photosession?name=${currentPhotosession?.folderName}`}
+                      text={`${window.location.protocol}//${window.location.hostname}/client/photosession?name=${currentPhotosession?.folderName}`}
                       color={ColorTheme.white}
                     />
                     <ImageButton
@@ -160,6 +188,7 @@ const EditPhotosessionModal: React.FC<EditPhotosessionNodalParams> = ({isOpened,
                 folderName={currentPhotosession?.folderName || ''}
                 photos={photos}
                 setPhotos={setPhotos}
+                needHead={isClient}
               />
               <Button onClick={saveHandler}>
                 <Text text={'Сохранить'} color={ColorTheme.white} size={'large'} />

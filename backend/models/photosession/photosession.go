@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"log"
+	"time"
 
 	"photographer-app/models/photo"
 )
@@ -18,6 +19,7 @@ type Photosession struct {
 	CreatedAt  string         `json:"createdAt"`
 	UpdatedAt  string         `json:"updatedAt"`
 	Photos     []*photo.Photo `json:"photos"`
+	Date       *string        `json:"date"`
 }
 
 type PortfolioPhotosession struct {
@@ -42,9 +44,24 @@ func (p *Photosession) Create(db *sql.DB) (int, error) {
 }
 
 func (p *Photosession) Save(db *sql.DB) error {
-	query := "update photosessions set (title, position, public, type, updated_at) = ($1, $2, $3, $4, now()) where id = $5"
+	var dateParam interface{}
 
-	_, err := db.Query(query, p.Title, p.Position, p.Public, p.Type, p.ID)
+	if p.Date != nil {
+		_, err := time.Parse("2006-01-02", *p.Date)
+
+		if err != nil {
+			dateParam = nil
+		} else {
+			dateParam = p.Date
+		}
+	}
+
+	query := `
+		update photosessions 
+		set (title, position, public, type, updated_at, date) = ($1, $2, $3, $4, now(), $5)
+		where id = $6`
+
+	_, err := db.Query(query, p.Title, p.Position, p.Public, p.Type, dateParam, p.ID)
 
 	if err != nil {
 		log.Println("Update photosession error:", err)
@@ -89,11 +106,14 @@ func GetIdByFolderName(db *sql.DB, folderName string) int {
 }
 
 func GetList(db *sql.DB) ([]Photosession, error) {
-	query := "select id, title, folder_name, position, public, type, created_at, updated_at from photosessions order by position desc"
+	query := `
+		select id, title, folder_name, position, public, type, created_at, updated_at, date
+		from photosessions
+		order by position desc`
 	rows, err := db.Query(query)
 
 	if err != nil {
-		log.Println("db get photosessions list error:")
+		log.Println("db get photosessions list error: ", err)
 		return nil, errors.New("db request error")
 	}
 	defer rows.Close()
@@ -102,7 +122,8 @@ func GetList(db *sql.DB) ([]Photosession, error) {
 	for rows.Next() {
 		p := Photosession{}
 
-		if err := rows.Scan(&p.ID, &p.Title, &p.FolderName, &p.Position, &p.Public, &p.Type, &p.CreatedAt, &p.UpdatedAt); err != nil {
+		if err := rows.Scan(&p.ID, &p.Title, &p.FolderName, &p.Position, &p.Public, &p.Type, &p.CreatedAt, &p.UpdatedAt, &p.Date); err != nil {
+			log.Println("db scan photosessions list error: ", err)
 			return nil, errors.New("db scan error")
 		}
 
@@ -143,11 +164,11 @@ func GetPortfolio(db *sql.DB) ([]PortfolioPhotosession, error) {
 func GetByFolderName(db *sql.DB, folderName string) (Photosession, error) {
 	p := Photosession{}
 	query := `
-		select id, title, folder_name, type
+		select id, title, folder_name, type, date
 		from photosessions 
 		where folder_name = $1`
 
-	err := db.QueryRow(query, folderName).Scan(&p.ID, &p.Title, &p.FolderName, &p.Type)
+	err := db.QueryRow(query, folderName).Scan(&p.ID, &p.Title, &p.FolderName, &p.Type, &p.Date)
 
 	if err != nil {
 		log.Println("Db get photosession by folder name error:", err)

@@ -5,7 +5,10 @@ import {Photosession as PhotosessionType} from '@type/photosession';
 import {Get} from '@api/Photosession';
 import {Gallery, PhotoView} from '@shared';
 import {PhotoWebpUrl, PhotoOriginalUrl} from '@utils/photo';
+import {FormatDate} from '@utils/date';
 import {Header} from 'components/Header';
+import HeadPhoto from './HeadPhoto';
+import Actions from './Actions';
 import './Photosession.scss';
 
 const Photosession: React.FC = () => {
@@ -15,6 +18,7 @@ const Photosession: React.FC = () => {
   const [currentPhotoIndex, setCurrentPhotoIndex] = React.useState<number>(0);
   const queryParameters = new URLSearchParams(window.location.search);
   const name = queryParameters.get('name');
+  const type = window.location.pathname.split('/')?.[1];
 
   React.useEffect(() => {
     if (!name) {
@@ -71,7 +75,7 @@ const Photosession: React.FC = () => {
         return;
       }
 
-      const photo = photosession.photos?.find((photo) => photo.position === photoEvent.index);
+      const photo = photosession.photos?.[photoEvent.index];
 
       if (!photo) {
         return;
@@ -91,9 +95,7 @@ const Photosession: React.FC = () => {
         return;
       }
 
-      const photo = photosession.photos?.find(
-        (photo) => photo.position === currentPhotoIndex + step
-      );
+      const photo = photosession.photos?.[currentPhotoIndex + step];
 
       if (!photo) {
         return;
@@ -105,16 +107,33 @@ const Photosession: React.FC = () => {
     [photosession, currentPhotoIndex]
   );
 
+  const findHeadPhoto = React.useCallback(() => {
+    return photosession?.photos?.find((photo) => photo.head);
+  }, [photosession]);
+  const headPhoto = findHeadPhoto();
+
   return (
     <>
-      <Header color={'white'} />
-      {/* {photosession?.type === 'portfolio' ? <Header color={'white'} /> : <></>} */}
       <PhotoView
         url={photoViewUrl}
         onClose={() => setPhotoViewUrl('')}
         onLeftClick={() => onPhotoViewChangeHandler('left')}
         onRightClick={() => onPhotoViewChangeHandler('right')}
       />
+      <Header color={'white'} />
+      {photosession && type === 'client' && headPhoto ? (
+        <>
+          <HeadPhoto
+            photo={headPhoto}
+            folderName={photosession.folderName}
+            title={photosession.title}
+            date={FormatDate(photosession.date)}
+          />
+          <Actions photos={photosession.photos} folderName={photosession.folderName} />
+        </>
+      ) : (
+        <></>
+      )}
       <div className={'PhotosessionWrapper'}>
         <div className={'PhotosessionContent'}>
           <Gallery photos={loadedPhotos} onClick={choosePhotoHandler} />

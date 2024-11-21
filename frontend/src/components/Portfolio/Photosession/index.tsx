@@ -17,7 +17,7 @@ const Photosession: React.FC<PhotosessionProps> = ({photosession}) => {
   return (
     <Button
       style={'photo'}
-      onClick={() => window.open(`/photosession?name=${photosession.folderName}`, '_self')}
+      onClick={() => window.open(`/portfolio/photosession?name=${photosession.folderName}`, '_self')}
     >
       <div className={'Photosession'}>
         <img className={'PhotosessionImage'} src={mainPhoto()} />

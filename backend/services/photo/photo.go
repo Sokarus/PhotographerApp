@@ -36,6 +36,7 @@ func (ps *PhotoService) UpdatePhotos(photos []*pModel.Photo) error {
 			Position: index,
 			Public:   photo.Public,
 			Main:     photo.Main,
+			Head:     photo.Head,
 		}
 
 		err := photoData.Update(ps.DB)
