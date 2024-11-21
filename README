@@ -26,3 +26,5 @@ tar -xzvf frontend_build.tar.gz
 sudo apt install certbot
 sudo certbot certonly --standalone -d kocherova-photo.site
 /etc/letsencrypt/live/kocherova-photo.site/
+
+cp -R /etc/letsencrypt/live/kocherova-photo.site-0001/ 
