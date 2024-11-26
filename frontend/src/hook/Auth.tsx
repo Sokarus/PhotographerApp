@@ -6,21 +6,31 @@ import {TimeHasPassed} from '@utils/date';
 
 const useAuth = (withRedirect: boolean = false) => {
   const dispatch = useDispatch();
+  const queryParameters = new URLSearchParams(window.location.search);
+  const needAuthFromParams = queryParameters.get('needAuth');
 
   const CheckAuth = React.useCallback(() => {
     if (withRedirect) {
       window.open('/', '_self');
-    } else {
-      UserData()
-        .then((userData) => {
-          dispatch(setLogin(userData.login));
-          dispatch(setRoles(userData.roles));
-        })
-        .catch(() => {});
+      return;
     }
-  }, [dispatch, withRedirect]);
+
+    UserData()
+      .then((userData) => {
+        dispatch(setLogin(userData.login));
+        dispatch(setRoles(userData.roles));
+      })
+      .catch(() => {});
+  }, [dispatch]);
 
   React.useEffect(() => {
+    if (!localStorage.getItem('needAuth') && !needAuthFromParams) {
+      return;
+    }
+    if (needAuthFromParams) {
+      localStorage.setItem('needAuth', 'true');
+    }
+
     const storedUser = localStorage.getItem('user');
 
     if (storedUser) {

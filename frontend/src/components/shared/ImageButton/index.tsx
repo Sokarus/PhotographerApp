@@ -8,12 +8,20 @@ interface IImageButton {
   onClick: (...args: any[]) => any;
   children?: ReactNode;
   spaceBetween?: number;
+  style?: 'Default' | 'Photo' | 'White' | 'Black';
 }
 
-const ImageButton: React.FC<IImageButton> = ({url, alt, onClick, children, spaceBetween = 0}) => {
+const ImageButton: React.FC<IImageButton> = ({
+  url,
+  alt,
+  onClick,
+  children,
+  spaceBetween = 0,
+  style = 'Default',
+}) => {
   return (
     <div style={{'--space-between': spaceBetween} as any} className={'ImageButtonWrapper'}>
-      <Button onClick={onClick}>
+      <Button onClick={onClick} style={style}>
         <img alt={alt} src={url} width={20} height={20} />
         {children || ''}
       </Button>

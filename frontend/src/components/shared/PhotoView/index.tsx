@@ -1,41 +1,49 @@
 import React from 'react';
 import {ImageButton} from '@shared';
-import {IconUrl} from '@utils/photo';
+import {IconUrl, PhotoOriginalUrl} from '@utils/photo';
+import {Photo} from '@type/photo';
+import {DownloadButton} from '@shared';
 import './PhotoView.scss';
 
 interface PhotoViewProps {
-  url: string;
+  photo: Photo;
   onClose: (...args: any) => any;
   onLeftClick: (...args: any) => any;
   onRightClick: (...args: any) => any;
+  folderName: string;
+  needActions: boolean;
 }
 
-const PhotoView: React.FC<PhotoViewProps> = ({url, onClose, onLeftClick, onRightClick}) => {
+const PhotoView: React.FC<PhotoViewProps> = ({
+  photo,
+  onClose,
+  onLeftClick,
+  onRightClick,
+  folderName,
+  needActions = false,
+}) => {
   const [imageLoaded, setImageLoaded] = React.useState<boolean>(false);
+  const [isDownloadModalOpen, setIsDownloadModalOpen] = React.useState<boolean>(false);
 
   React.useEffect(() => {
-    if (!url) {
+    if (!photo) {
       return;
     }
 
     setImageLoaded(false);
 
     const img = new Image();
-    img.src = url;
+    img.src = PhotoOriginalUrl(folderName, photo.name);
 
     img.onload = async () => {
       setImageLoaded(true);
     };
-  }, [url]);
+  }, [photo, folderName, needActions]);
 
-  return url ? (
+  return (
     <div className={'PhotoView'}>
       <div className={'PhotoViewClose'}>
-        <ImageButton
-          url={'https://storage.yandexcloud.net/kocherovaphoto/icons/close.svg'}
-          alt={'close'}
-          onClick={onClose}
-        />
+        <ImageButton url={IconUrl('close')} alt={'close'} onClick={onClose} />
       </div>
       <div className={'PhotoViewLeft'} onClick={onLeftClick}>
         <div className={'PhotoViewLeftLight'} />
@@ -44,7 +52,23 @@ const PhotoView: React.FC<PhotoViewProps> = ({url, onClose, onLeftClick, onRight
         <div className={'PhotoViewRightLight'} />
       </div>
       {imageLoaded ? (
-        <img className={'PhotoViewImage'} src={url} onClick={onClose} />
+        <div className={'PhotoViewBox'}>
+          {needActions ? (
+            <DownloadButton
+              isModalOpen={isDownloadModalOpen}
+              setIsModalOpen={() => setIsDownloadModalOpen(!isDownloadModalOpen)}
+              photoFolder={folderName}
+              photoName={photo.name}
+            />
+          ) : (
+            <></>
+          )}
+          <img
+            className={'PhotoViewBoxImage'}
+            src={PhotoOriginalUrl(folderName, photo.name)}
+            onClick={onClose}
+          />
+        </div>
       ) : (
         <div className={'PhotoViewPending'}>
           <img
@@ -56,8 +80,6 @@ const PhotoView: React.FC<PhotoViewProps> = ({url, onClose, onLeftClick, onRight
         </div>
       )}
     </div>
-  ) : (
-    <></>
   );
 };
 

@@ -1,6 +1,6 @@
 interface BaseModal {
   isOpened: boolean;
-  onClose: () => void;
+  onClose: (...args: any) => any;
 }
 
 export {type BaseModal};

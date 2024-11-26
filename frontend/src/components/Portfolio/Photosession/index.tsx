@@ -16,7 +16,7 @@ const Photosession: React.FC<PhotosessionProps> = ({photosession}) => {
 
   return (
     <Button
-      style={'photo'}
+      style={'Photo'}
       onClick={() => window.open(`/portfolio/photosession?name=${photosession.folderName}`, '_self')}
     >
       <div className={'Photosession'}>

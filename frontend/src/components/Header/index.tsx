@@ -23,7 +23,7 @@ const Header: React.FC<HeaderProps> = ({color = 'black'}) => {
   return (
     <div className={`HeaderWrapper ${scrolled ? 'Scrolled' : ''}`}>
       <LeftSide color={color} />
-      <RightSide color={color} />
+      {localStorage.getItem('needAuth') ? <RightSide color={color} /> : <></>}
     </div>
   );
 };

@@ -8,48 +8,53 @@
   &Left {
     position: absolute;
     z-index: 6;
-    height: 100vh;
-    width: 30vw;
+    height: 40px;
+    width: 40px;
     align-content: center;
     justify-items: center;
     cursor: pointer;
+    top: calc(50vh - 20px);
+    left: 60px;
 
     &Light {
       background-color: rgba(255, 255, 255, 0.694);
       border-radius: 100px;
-      width: 1px;
-      height: 0px;
+      width: 2px;
+      height: 10px;
       transition: all 0.3s ease;
     }
 
     &:hover &Light {
-      height: 50px;
-      box-shadow: 0px 0px 80px 40px rgba(255, 255, 255, 1);
+      width: 1px;
+      height: 12px;
+      box-shadow: 0px 0px 20px 20px rgba(255, 255, 255, 1);
       transform: scale(1.2);
     }
   }
 
   &Right {
-    right: 0;
     position: absolute;
     z-index: 6;
-    height: 100vh;
-    width: 30vw;
+    height: 40px;
+    width: 40px;
     align-content: center;
     justify-items: center;
     cursor: pointer;
+    top: calc(50vh - 20px);
+    right: 60px;
 
     &Light {
       background-color: rgba(255, 255, 255, 0.694);
       border-radius: 100px;
-      width: 1px;
-      height: 0px;
+      width: 2px;
+      height: 10px;
       transition: all 0.3s ease;
     }
 
     &:hover &Light {
-      height: 50px;
-      box-shadow: 0px 0px 80px 40px rgba(255, 255, 255, 1);
+      width: 1px;
+      height: 12px;
+      box-shadow: 0px 0px 20px 20px rgba(255, 255, 255, 1);
       transform: scale(1.2);
     }
   }
@@ -61,11 +66,15 @@
     z-index: 7;
   }
 
-  &Image {
+  &Box {
     position: absolute;
     height: 100vh;
     inset-area: center;
     cursor: pointer;
+
+    &Image {
+      height: inherit;
+    }
   }
 
   &Pending {

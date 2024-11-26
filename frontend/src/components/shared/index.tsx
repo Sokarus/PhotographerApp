@@ -11,3 +11,5 @@ export * from './Toggle';
 export * from './Gallery';
 export * from './PhotoView';
 export * from './InputDate';
+export * from './DownloadButton';
+export * from './DownloadModal';

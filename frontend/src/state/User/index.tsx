@@ -1,5 +1,5 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
-import { Role } from '@type/user';
+import {Role} from '@type/user';
 
 interface IInitialState {
   login: string;

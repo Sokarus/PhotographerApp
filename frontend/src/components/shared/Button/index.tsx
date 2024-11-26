@@ -2,14 +2,14 @@ import React, {ReactNode} from 'react';
 import './Button.scss';
 
 interface IButton {
-  onClick: () => void;
+  onClick: (...args: any) => any;
   children: ReactNode;
-  style?: 'default' | 'photo';
+  style?: 'Default' | 'Photo' | 'White' | 'Black';
 }
 
-const Button: React.FC<IButton> = ({onClick, children, style = 'default'}) => {
+const Button: React.FC<IButton> = ({onClick, children, style = 'Default'}) => {
   return (
-    <button className={style === 'photo' ? 'ButtonPhoto' : 'ButtonDefault'} onClick={onClick}>
+    <button className={`Button${style}`} onClick={onClick}>
       {children}
     </button>
   );
