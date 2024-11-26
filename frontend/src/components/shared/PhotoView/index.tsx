@@ -24,6 +24,7 @@ const PhotoView: React.FC<PhotoViewProps> = ({
 }) => {
   const [imageLoaded, setImageLoaded] = React.useState<boolean>(false);
   const [isDownloadModalOpen, setIsDownloadModalOpen] = React.useState<boolean>(false);
+  const [orientation, setOrientation] = React.useState<string>('Vertical');
 
   React.useEffect(() => {
     if (!photo) {
@@ -37,6 +38,10 @@ const PhotoView: React.FC<PhotoViewProps> = ({
 
     img.onload = async () => {
       setImageLoaded(true);
+      
+      if (img.width > img.height) {
+        setOrientation('Horizontal')
+      }
     };
   }, [photo, folderName, needActions]);
 
@@ -64,7 +69,7 @@ const PhotoView: React.FC<PhotoViewProps> = ({
             <></>
           )}
           <img
-            className={'PhotoViewBoxImage'}
+            className={`PhotoViewBoxImage${orientation}`}
             src={PhotoOriginalUrl(folderName, photo.name)}
             onClick={onClose}
           />

@@ -71,9 +71,16 @@
     height: 100vh;
     inset-area: center;
     cursor: pointer;
+    align-content: center;
 
     &Image {
-      height: inherit;
+      &Vertical {
+        height: inherit;
+      }
+
+      &Horizontal {
+        width: 100vw;
+      }
     }
   }
 
