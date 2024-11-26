@@ -17,11 +17,6 @@ const DownloadModal: React.FC<DownloadModalProps> = ({
   photoName,
 }) => {
   const downloadPhotoContainer = document.getElementById('download-photo-modal');
-
-  if (!downloadPhotoContainer || !isOpened) {
-    return null;
-  }
-
   const downloadHandler = React.useCallback(
     (e: React.MouseEvent, type: string) => {
       e.stopPropagation();
@@ -44,6 +39,10 @@ const DownloadModal: React.FC<DownloadModalProps> = ({
     },
     [photoFolder, photoName]
   );
+
+  if (!downloadPhotoContainer || !isOpened) {
+    return null;
+  }
 
   return ReactDOM.createPortal(
     <Modal isOpened={isOpened} onClose={onClose} onPressEnter={() => {}} style={'White'}>
