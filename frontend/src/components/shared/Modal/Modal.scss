@@ -1,7 +1,7 @@
 @mixin window-wrapper {
   position: relative;
   margin: auto;
-  min-width: 400px;
+  min-width: 300px;
   width: fit-content;
   height: fit-content;
   border-radius: 20px;
@@ -60,6 +60,8 @@
     &Full {
       height: 100vh;
       overflow: auto;
+      min-width: 100%;
+      width: 100%;
     }
   }
 }

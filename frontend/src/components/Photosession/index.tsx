@@ -6,7 +6,7 @@ import {Get} from '@api/Photosession';
 import {Gallery, PhotoView} from '@shared';
 import {PhotoWebpUrl} from '@utils/photo';
 import {FormatDate} from '@utils/date';
-import {Header} from 'components/Header';
+import {Header, Pending} from '@components';
 import {Photo as PhotoType} from '@type/photo';
 import HeadPhoto from './HeadPhoto';
 import Actions from './Actions';
@@ -126,6 +126,15 @@ const Photosession: React.FC = () => {
 
   if (!photosession) {
     return <></>;
+  }
+
+  if (loadedPhotos?.length <= 0) {
+    return (
+      <>
+        <Header color={'white'} />
+        <Pending isPending={true} />
+      </>
+    );
   }
 
   return (

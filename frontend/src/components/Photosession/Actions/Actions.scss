@@ -1,7 +1,9 @@
 .ActionsWrapper {
-    background-color: black;
+  background-color: black;
   display: flex;
   gap: 40px;
   justify-content: center;
-  padding: 40px;
+  padding: 40px 80px 0 80px;
+  flex-direction: column;
+  min-height: 100px;
 }

@@ -20,6 +20,7 @@ const DownloadModal: React.FC<DownloadModalProps> = ({
   const downloadHandler = React.useCallback(
     (e: React.MouseEvent, type: string) => {
       e.stopPropagation();
+      e.preventDefault();
 
       if (!photoName) {
         return;
@@ -45,12 +46,18 @@ const DownloadModal: React.FC<DownloadModalProps> = ({
   }
 
   return ReactDOM.createPortal(
-    <Modal isOpened={isOpened} onClose={onClose} onPressEnter={() => {}} style={'White'}>
+    <Modal
+      isOpened={isOpened}
+      onClose={onClose}
+      onPressEnter={() => {}}
+      style={'White'}
+      backgroundBlur={0.9}
+    >
       <div className={'DownloadModalWrapper'}>
-        <Button onClick={(e: React.MouseEvent) => downloadHandler(e, 'original')} style={'Black'}>
+        <Button onClick={(e: React.MouseEvent) => downloadHandler(e, 'original')} style={'Border'}>
           <Text text={'Скачать оригинал'} color={'white'} />
         </Button>
-        <Button onClick={(e: React.MouseEvent) => downloadHandler(e, 'original')} style={'Black'}>
+        <Button onClick={(e: React.MouseEvent) => downloadHandler(e, 'web')} style={'Border'}>
           <Text text={'Скачать веб-формат'} color={'white'} />
         </Button>
       </div>

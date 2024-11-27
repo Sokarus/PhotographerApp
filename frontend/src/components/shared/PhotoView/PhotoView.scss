@@ -4,6 +4,7 @@
   position: fixed;
   width: 100vw;
   height: 100vh;
+  justify-items: center;
 
   &Left {
     position: absolute;
@@ -59,13 +60,6 @@
     }
   }
 
-  &Close {
-    position: absolute;
-    right: 50px;
-    top: 50px;
-    z-index: 7;
-  }
-
   &Box {
     position: absolute;
     height: 100vh;
@@ -75,11 +69,26 @@
 
     &Image {
       &Vertical {
-        height: inherit;
+        height: 100%;
       }
 
       &Horizontal {
-        width: 100vw;
+        width: 100%;
+      }
+    }
+
+    &Relative {
+      position: relative;
+      height: 100%;
+      width: 100%;
+
+      &Actions {
+        position: absolute;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        top: 10px;
+        right: 10px;
       }
     }
   }

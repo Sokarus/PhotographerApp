@@ -5,7 +5,7 @@ import {Provider} from 'react-redux';
 import {ToastContainer} from 'react-toastify';
 import store from '@state/index';
 import {Home, Admin, Auth, Portfolio, Photosession} from '@components';
-import './index.css';
+import './index.scss';
 import 'react-toastify/dist/ReactToastify.css';
 import 'react-photo-album/rows.css';
 

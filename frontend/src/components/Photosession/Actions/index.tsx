@@ -50,10 +50,10 @@ const Actions: React.FC<ActionsProps> = ({photos, folderName}) => {
 
   return (
     <div className={'ActionsWrapper'}>
-      <Button onClick={() => handleSave('original')}>
+      <Button onClick={() => handleSave('original')} style={'Border'}>
         <Text text={'Скачать оригиналы'} size={'large'} color={'white'} />
       </Button>
-      <Button onClick={() => handleSave('webp')}>
+      <Button onClick={() => handleSave('webp')} style={'Border'}>
         <Text text={'Скачать сжатый формат (для интернета)'} size={'large'} color={'white'} />
       </Button>
     </div>

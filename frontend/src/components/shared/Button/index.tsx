@@ -4,7 +4,7 @@ import './Button.scss';
 interface IButton {
   onClick: (...args: any) => any;
   children: ReactNode;
-  style?: 'Default' | 'Photo' | 'White' | 'Black';
+  style?: 'Default' | 'Photo' | 'White' | 'Black' | 'Border';
 }
 
 const Button: React.FC<IButton> = ({onClick, children, style = 'Default'}) => {

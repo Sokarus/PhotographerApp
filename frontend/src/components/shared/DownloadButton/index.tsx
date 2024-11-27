@@ -9,6 +9,7 @@ interface DownloadButtonProps {
   photoName: string;
   isModalOpen: boolean;
   setIsModalOpen: (...args: any) => any;
+  isAbsolute?: boolean;
 }
 
 const DownloadButton: React.FC<DownloadButtonProps> = ({
@@ -16,27 +17,28 @@ const DownloadButton: React.FC<DownloadButtonProps> = ({
   photoName,
   isModalOpen,
   setIsModalOpen,
+  isAbsolute = true,
 }) => {
   const setIsModalOpenHandler = React.useCallback(
-    (e: React.MouseEvent, isOpen: boolean) => {
+    (e: React.MouseEvent, close: boolean) => {
       e.stopPropagation();
-      setIsModalOpen(isOpen);
+      setIsModalOpen(close ? '' : photoName);
     },
     [photoFolder, photoName, setIsModalOpen]
   );
 
   return (
     <>
-      <div className={'DownloadButtonWrapper'}>
+      <div className={isAbsolute ? 'DownloadButtonWrapper' : ''}>
         <ImageButton
           url={IconUrl('download')}
           alt={'download'}
-          onClick={(e: React.MouseEvent) => setIsModalOpenHandler(e, true)}
+          onClick={(e: React.MouseEvent) => setIsModalOpenHandler(e, false)}
         />
       </div>
       <DownloadModal
         isOpened={isModalOpen}
-        onClose={(e: React.MouseEvent) => setIsModalOpenHandler(e, false)}
+        onClose={(e: React.MouseEvent) => setIsModalOpenHandler(e, true)}
         photoFolder={photoFolder}
         photoName={photoName}
       />
