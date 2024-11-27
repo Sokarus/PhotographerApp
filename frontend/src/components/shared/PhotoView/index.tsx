@@ -27,20 +27,29 @@ const PhotoView: React.FC<PhotoViewProps> = ({
   const [orientation, setOrientation] = React.useState<'Vertical' | 'Horizontal'>('Vertical');
   const [touchStart, setTouchStart] = React.useState<{x: number; y: number} | null>(null);
   const [touchEnd, setTouchEnd] = React.useState<{x: number; y: number} | null>(null);
+  const [needArrows, setNeedArrows] = React.useState<boolean>(window.innerWidth >= 768);
   const sliderRef = React.useRef<HTMLDivElement | null>(null);
   const startXRef = React.useRef<number | null>(null);
   const currentTranslate = React.useRef<number>(0);
   const isDraggingRef = React.useRef(false);
 
   const handleTouchStart = (e: React.TouchEvent) => {
+    e.preventDefault();
     const touch = e.touches[0];
     setTouchStart({x: touch.clientX, y: touch.clientY});
+    isDraggingRef.current = true;
+    startXRef.current = touch.clientX;
+    currentTranslate.current = 0;
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (!touchStart) return;
+    if (!touchStart || startXRef.current === null) return;
     const touch = e.touches[0];
     setTouchEnd({x: touch.clientX, y: touch.clientY});
+    const deltaX = touch.clientX - startXRef.current;
+    if (sliderRef.current) {
+      sliderRef.current.style.transform = `translateX(${deltaX}px)`;
+    }
   };
 
   const handleTouchEnd = () => {
@@ -59,6 +68,11 @@ const PhotoView: React.FC<PhotoViewProps> = ({
 
     setTouchStart(null);
     setTouchEnd(null);
+    if (sliderRef.current) {
+      sliderRef.current.style.transform = 'translateX(0)';
+    }
+    currentTranslate.current = 0;
+    isDraggingRef.current = false;
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -127,6 +141,12 @@ const PhotoView: React.FC<PhotoViewProps> = ({
       } else {
         setOrientation('Vertical');
       }
+
+      if (screenWidth >= 768) {
+        setNeedArrows(true);
+      } else {
+        setNeedArrows(false);
+      }
     };
 
     img.onload = async () => {
@@ -140,12 +160,16 @@ const PhotoView: React.FC<PhotoViewProps> = ({
 
   return (
     <div className={'PhotoView'}>
-      <div className={'PhotoViewLeft'} onClick={onLeftClick}>
-        <div className={'PhotoViewLeftLight'} />
-      </div>
-      <div className={'PhotoViewRight'} onClick={onRightClick}>
-        <div className={'PhotoViewRightLight'} />
-      </div>
+      {needArrows ? (
+        <>
+          <div className={'PhotoViewLeft'} onClick={onLeftClick}>
+            <div className={'PhotoViewLeftLight'} />
+          </div>
+          <div className={'PhotoViewRight'} onClick={onRightClick}>
+            <div className={'PhotoViewRightLight'} />
+          </div>
+        </>
+      ) : null}
       {imageLoaded ? (
         <div className={'PhotoViewBox'}>
           <div
