@@ -1,7 +1,8 @@
 import React from 'react';
-import {Text, ImageButton} from '@shared';
+import {Text, Button, ImageButton} from '@shared';
 import {Photo} from '@type/photo';
 import {PhotoWebpUrl, IconUrl} from '@utils/photo';
+import Actions from './Actions';
 import './PhotosEdit.scss';
 
 interface PhotosEditProps {
@@ -37,13 +38,6 @@ const PhotosEdit: React.FC<PhotosEditProps> = ({folderName, photos, setPhotos, n
   const dragOverHandler = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
   };
-
-  const publishImage = (isPublished: boolean) =>
-    isPublished ? IconUrl('published') : IconUrl('unpublished');
-
-  const mainImage = (isMain: boolean) => (isMain ? IconUrl('main') : IconUrl('not_main'));
-
-  const headImage = (isHead: boolean) => (isHead ? IconUrl('head') : IconUrl('not_head'));
 
   const publishHandler = React.useCallback(
     (photoIndex: number, publish: boolean) => {
@@ -95,62 +89,67 @@ const PhotosEdit: React.FC<PhotosEditProps> = ({folderName, photos, setPhotos, n
     }
   }, [needHead]);
 
+  const publishAllHandler = React.useCallback(() => {
+    const isPublic = photos.find((photo) => !photo.public);
+
+    setPhotos(
+      photos.map((photo) => {
+        return {
+          ...photo,
+          public: !!isPublic,
+          main: photo.main,
+          head: photo.head,
+        };
+      })
+    );
+  }, [photos]);
+
   return (
     <div className={'PhotosEditWrapper'}>
-      {photos.map((photo, index) => (
-        <div
-          className={'PhotosEditImageWrapper'}
-          key={index}
-          draggable
-          onDragStart={(event) => dragStartHandler(event, index)}
-          onDrop={(event) => dropHandler(event, index)}
-          onDragOver={dragOverHandler}
-        >
-          <div className={'PhotosEditImageNumber'}>
-            <Text text={index} />
-          </div>
-          <img
-            className={'PhotosEditImagePreview'}
-            src={PhotoWebpUrl(folderName, photo.name)}
-            alt={`Uploaded preview ${index}`}
-          />
-          <div className={'PhotosEditImagePublish'}>
-            <ImageButton
-              url={publishImage(photo.public)}
-              alt={'published'}
-              onClick={() => publishHandler(index, !photo.public)}
-            />
-          </div>
-          <div className={'PhotosEditImageMain'}>
-            <ImageButton
-              url={mainImage(photo.main)}
-              alt={'main'}
-              onClick={() => mainHandler(index, !photo.main)}
-            />
-          </div>
-          {needHead ? (
-            <div className={'PhotosEditImageHead'}>
-              <ImageButton
-                url={headImage(photo.head)}
-                alt={'head'}
-                onClick={() => headHandler(index, !photo.head)}
-              />
+      <div className={'PhotosEditActions'}>
+        <Button onClick={publishAllHandler}>
+          <Text text={'Опубликовать все фото'} size={'large'} color={'white'} />
+        </Button>
+      </div>
+      <div className={'PhotosEditItems'}>
+        {photos.map((photo, index) => (
+          <div
+            className={'PhotosEditImageWrapper'}
+            key={index}
+            draggable
+            onDragStart={(event) => dragStartHandler(event, index)}
+            onDrop={(event) => dropHandler(event, index)}
+            onDragOver={dragOverHandler}
+          >
+            <div className={'PhotosEditImageNumber'}>
+              <Text text={index} />
             </div>
-          ) : (
-            <></>
-          )}
-          <img
-            ref={dragPhotoRef}
-            src={''}
-            alt={'drag preview'}
-            style={{
-              position: 'absolute',
-              top: '-9999px',
-              left: '-9999px',
-            }}
-          />
-        </div>
-      ))}
+            <img
+              className={'PhotosEditImagePreview'}
+              src={PhotoWebpUrl(folderName, photo.name)}
+              alt={`Uploaded preview ${index}`}
+            />
+            <Actions
+              photo={photo}
+              index={index}
+              needHead={needHead}
+              publishHandler={publishHandler}
+              mainHandler={mainHandler}
+              headHandler={headHandler}
+            />
+            <img
+              ref={dragPhotoRef}
+              src={''}
+              alt={'drag preview'}
+              style={{
+                position: 'absolute',
+                top: '-9999px',
+                left: '-9999px',
+              }}
+            />
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

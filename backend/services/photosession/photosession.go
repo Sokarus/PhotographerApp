@@ -8,6 +8,7 @@ import (
 	"photographer-app/models/photo"
 	psModel "photographer-app/models/photosession"
 	"photographer-app/models/yandex"
+	"strconv"
 	"sync"
 )
 
@@ -35,13 +36,13 @@ func (ps *PhotosessionService) UploadPhotosToYandex(photos, photosConverted []*m
 		}
 	}
 
-	for _, photo := range photos {
+	for index, photo := range photos {
 		wg.Add(1)
-		go upload(photo, "photosession/"+path+"/")
+		go upload(photo, "photosession/"+path+"/"+strconv.Itoa(index))
 	}
-	for _, photo := range photosConverted {
+	for index, photo := range photosConverted {
 		wg.Add(1)
-		go upload(photo, "photosession/"+path+"/")
+		go upload(photo, "photosession/"+path+"/"+strconv.Itoa(index))
 	}
 
 	wg.Wait()
