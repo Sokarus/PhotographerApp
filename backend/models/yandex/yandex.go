@@ -3,14 +3,17 @@ package yandex
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"log"
 	"mime/multipart"
+	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/aws/aws-sdk-go-v2/service/s3/types"
 )
 
 type Yandex struct {
@@ -68,4 +71,43 @@ func (y Yandex) UploadPhoto(fileHeader *multipart.FileHeader, path string) error
 	}
 
 	return nil
+}
+
+func (y Yandex) DeletePhotos(bucketName string, objectKeys []string) error {
+	ctx := context.TODO()
+	var objectIds []types.ObjectIdentifier
+	client := y.getClientInstance()
+	for _, key := range objectKeys {
+		objectIds = append(objectIds, types.ObjectIdentifier{Key: aws.String(key)})
+	}
+	output, err := client.DeleteObjects(ctx, &s3.DeleteObjectsInput{
+		Bucket: aws.String(bucketName),
+		Delete: &types.Delete{Objects: objectIds, Quiet: aws.Bool(true)},
+	})
+	if err != nil || len(output.Errors) > 0 {
+		log.Printf("Error deleting objects from bucket %s.\n", bucketName)
+		if err != nil {
+			var noBucket *types.NoSuchBucket
+			if errors.As(err, &noBucket) {
+				log.Printf("Bucket %s does not exist.\n", bucketName)
+				err = noBucket
+			}
+		} else if len(output.Errors) > 0 {
+			for _, outErr := range output.Errors {
+				log.Printf("%s: %s\n", *outErr.Key, *outErr.Message)
+			}
+			err = fmt.Errorf("%s", *output.Errors[0].Message)
+		}
+	} else {
+		for _, delObjs := range output.Deleted {
+			err = s3.NewObjectNotExistsWaiter(client).Wait(
+				ctx, &s3.HeadObjectInput{Bucket: aws.String(bucketName), Key: delObjs.Key}, time.Minute)
+			if err != nil {
+				log.Printf("Failed attempt to wait for object %s to be deleted.\n", *delObjs.Key)
+			} else {
+				log.Printf("Deleted %s.\n", *delObjs.Key)
+			}
+		}
+	}
+	return err
 }

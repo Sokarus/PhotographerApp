@@ -24,9 +24,6 @@ type CreatePhotosessionData struct {
 	PhotosConverted []*multipart.FileHeader `form:"photosConverted" binding:"required"`
 }
 
-type UpdatePhotosessionData struct {
-}
-
 // PUBLIC METHODS
 
 func CreatePhotosession(c *gin.Context, db *sql.DB, yandex *yandex.Yandex) {

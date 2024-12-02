@@ -10,9 +10,10 @@ interface PhotosEditProps {
   photos: Photo[];
   setPhotos: (photos: Photo[]) => void;
   needHead: boolean;
+  initPhotos: Photo[];
 }
 
-const PhotosEdit: React.FC<PhotosEditProps> = ({folderName, photos, setPhotos, needHead}) => {
+const PhotosEdit: React.FC<PhotosEditProps> = ({folderName, photos, setPhotos, needHead, initPhotos}) => {
   const dragPhotoRef = React.useRef<HTMLImageElement | null>(null);
 
   const dragStartHandler = (event: React.DragEvent<HTMLDivElement>, index: number) => {
@@ -136,6 +137,7 @@ const PhotosEdit: React.FC<PhotosEditProps> = ({folderName, photos, setPhotos, n
               publishHandler={publishHandler}
               mainHandler={mainHandler}
               headHandler={headHandler}
+              initPhotos={initPhotos}
             />
             <img
               ref={dragPhotoRef}

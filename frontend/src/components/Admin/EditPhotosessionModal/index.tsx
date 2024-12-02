@@ -55,7 +55,7 @@ const EditPhotosessionModal: React.FC<EditPhotosessionNodalParams> = ({isOpened,
       }
 
       setCurrentPhotosession(currentPhotosession);
-      setPhotos(currentPhotosession.photos || []);
+      setPhotos([...currentPhotosession.photos] || []);
       setIsPublish(currentPhotosession.public);
       setIsClient(currentPhotosession.type === 'client');
       setTitle(currentPhotosession.title);
@@ -189,6 +189,7 @@ const EditPhotosessionModal: React.FC<EditPhotosessionNodalParams> = ({isOpened,
                 photos={photos}
                 setPhotos={setPhotos}
                 needHead={isClient}
+                initPhotos={currentPhotosession?.photos || []}
               />
               <Button onClick={saveHandler}>
                 <Text text={'Сохранить'} color={ColorTheme.white} size={'large'} />

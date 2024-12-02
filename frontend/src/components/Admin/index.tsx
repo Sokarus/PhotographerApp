@@ -2,6 +2,7 @@ import React from 'react';
 import {Header} from '@components';
 import {ImageButton, Text} from '@shared';
 import useAuth from '@hook/Auth';
+import {IconUrl} from '@utils/photo';
 import CreatePhotosessionModal from './CreatePhotosessionModal';
 import EditPhotosessionModal from './EditPhotosessionModal';
 import './Admin.scss';
@@ -19,7 +20,7 @@ const Admin: React.FC = () => {
       <div className={'AdminWrapper'}>
         <div className={'AdminContent'}>
           <ImageButton
-            url={'https://storage.yandexcloud.net/kocherovaphoto/icons/add.svg'}
+            url={IconUrl('add')}
             alt={'add'}
             onClick={() => setIsCreatePhotosessionModalOpened(true)}
             spaceBetween={10}
@@ -27,7 +28,7 @@ const Admin: React.FC = () => {
             <Text text={'Создать фотосессию'} />
           </ImageButton>
           <ImageButton
-            url={'https://storage.yandexcloud.net/kocherovaphoto/icons/edit.svg'}
+            url={IconUrl('edit')}
             alt={'edit'}
             onClick={() => setIsEditPhotosessionModalOpened(true)}
             spaceBetween={10}

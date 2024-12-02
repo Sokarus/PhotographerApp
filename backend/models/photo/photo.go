@@ -46,6 +46,21 @@ func (p *Photo) Update(db *sql.DB) error {
 	return nil
 }
 
+func (p *Photo) Delete(db *sql.DB) error {
+	query := `
+		delete from photos
+		where id = $1
+	`
+	_, err := db.Exec(query, p.ID)
+
+	if err != nil {
+		log.Println("Delete photo error:", err)
+		return errors.New("db request error")
+	}
+
+	return nil
+}
+
 func GetListByPhotosessionId(db *sql.DB, photosessionId int, public bool) ([]*Photo, error) {
 	var query string
 	var rows *sql.Rows
@@ -109,4 +124,47 @@ func GetMainPhoto(db *sql.DB, photosessionId int) (string, error) {
 	}
 
 	return string(name.String), nil
+}
+
+func (p *Photo) GetFolderNameById(db *sql.DB) (string, error) {
+	var folderName sql.NullString
+	query := `
+		select distinct folder_name
+		from photosessions ps
+		inner join photos p on p.photosession_id = ps.id
+		where p.id = $1
+	`
+	err := db.QueryRow(query, p.ID).Scan(&folderName)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return "", nil
+		} else {
+			log.Println("Db get folder name by photo id error:", err)
+			return "", errors.New("db request error")
+		}
+	}
+
+	return folderName.String, nil
+}
+
+func (p *Photo) GetNameById(db *sql.DB) (string, error) {
+	var name sql.NullString
+	query := `
+		select name
+		from photos
+		where id = $1
+	`
+	err := db.QueryRow(query, p.ID).Scan(&name)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return "", nil
+		} else {
+			log.Println("Db get name by photo id error:", err)
+			return "", errors.New("db request error")
+		}
+	}
+
+	return name.String, nil
 }

@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"photographer-app/models/yandex"
+	"photographer-app/routes/photo"
 	"photographer-app/routes/photosession"
 	"photographer-app/routes/user"
 
@@ -29,6 +30,7 @@ func InitRouter(db *sql.DB, jwtKey []byte, yandex *yandex.Yandex, host string) *
 	{
 		user.AddPrivateRoutes(api, db, host)
 		photosession.AddPrivateRoutes(api, db, yandex)
+		photo.AddPrivateRoutes(api, db, yandex)
 	}
 
 	return router
