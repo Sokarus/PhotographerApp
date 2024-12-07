@@ -16,6 +16,9 @@ func AddPrivateRoutes(router *gin.RouterGroup, db *sql.DB, yandex *yandex.Yandex
 		Yandex: yandex,
 	}
 
+	router.POST("photo/upload", func(c *gin.Context) {
+		photoController.Upload(c)
+	})
 	router.DELETE("photo/delete", func(c *gin.Context) {
 		photoController.Delete(c)
 	})

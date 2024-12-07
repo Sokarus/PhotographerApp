@@ -132,7 +132,7 @@ const Photosession: React.FC = () => {
     return (
       <>
         <Header color={'white'} />
-        <Pending isPending={true} />
+        <Pending />
       </>
     );
   }

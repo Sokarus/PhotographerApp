@@ -200,7 +200,7 @@ const EditPhotosessionModal: React.FC<EditPhotosessionNodalParams> = ({isOpened,
           )}
         </div>
       </Modal>
-      <Pending isPending={isPending} />
+      {isPending && <Pending />}
     </>
   );
 };

@@ -1,11 +1,13 @@
 import React from 'react';
 import {toast} from 'react-toastify';
+import {v4 as uuidv4} from 'uuid';
 import {Modal, InputText, Text, InputImage, Button} from '@shared';
 import {BaseModal} from '@type/modal';
 import {ColorTheme} from '@constant/style';
 import {Create} from '@api/Photosession';
 import {Pending} from '@components';
 import {PhotoObject} from '@type/photo';
+import {GetPhotoExtention} from '@utils/photo';
 import PhotosPreview from '../PhotosPreview';
 import './CreatePhotosessionModal.scss';
 
@@ -15,6 +17,13 @@ const CreatePhotosessionModal: React.FC<ICreatePhotosessionModal> = ({isOpened, 
   const [title, setTitle] = React.useState<string>('');
   const [photos, setPhotos] = React.useState<PhotoObject[]>([]);
   const [isPending, setIsPending] = React.useState<boolean>(false);
+
+  const reset = React.useCallback(() => {
+    setIsPending(false);
+    setPhotos([]);
+    setTitle('');
+    onClose();
+  }, []);
 
   const createHandler = React.useCallback(async () => {
     if (title.length < 3) {
@@ -29,25 +38,30 @@ const CreatePhotosessionModal: React.FC<ICreatePhotosessionModal> = ({isOpened, 
     try {
       const imagesFiles: File[] = photos.map((photoObject) => photoObject.file);
       setIsPending(true);
-      await Create(title, imagesFiles);
-      toast.success('Фотосессия успешно создана!');
+      await Create(title, imagesFiles).then(() => {
+        toast.success('Фотосессия успешно создана!');
+        reset();
+      });
     } catch (error) {
       toast.error((error as Error).message);
-    } finally {
-      setIsPending(false);
-      setPhotos([]);
-      setTitle('');
-      onClose();
+      reset();
     }
   }, [title, photos, onClose]);
 
   const photoUploadHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files) {
-      const newPhotos = Array.from(files).map((file) => ({
-        file,
-        url: URL.createObjectURL(file),
-      }));
+      const newPhotos = Array.from(files).map((file) => {
+        const newPhotoName = uuidv4() + '.' + GetPhotoExtention(file.name);
+        const renamedFile = new File([file], newPhotoName, {
+          type: file.type,
+        });
+
+        return {
+          file: renamedFile,
+          url: URL.createObjectURL(file),
+        };
+      });
       setPhotos((prevPhotos) => [...(prevPhotos || []), ...newPhotos]);
     }
   };
@@ -82,7 +96,7 @@ const CreatePhotosessionModal: React.FC<ICreatePhotosessionModal> = ({isOpened, 
           </Button>
         </div>
       </Modal>
-      <Pending isPending={isPending} />
+      {isPending && <Pending />}
     </>
   );
 };

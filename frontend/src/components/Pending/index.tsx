@@ -2,12 +2,8 @@ import React from 'react';
 import './Pending.scss';
 import { IconUrl } from '@utils/photo';
 
-interface IPending {
-  isPending: boolean;
-}
-
-const Pending: React.FC<IPending> = ({isPending}) => {
-  return isPending ? (
+const Pending: React.FC = () => {
+  return (
     <div className={'Pending'}>
       <img
         className={'PendingImage'}
@@ -16,8 +12,6 @@ const Pending: React.FC<IPending> = ({isPending}) => {
         src={IconUrl('pending')}
       />
     </div>
-  ) : (
-    <></>
   );
 };
 

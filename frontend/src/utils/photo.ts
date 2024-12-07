@@ -11,8 +11,9 @@ const ConvertPhotosToWebp = async (files: File[]) =>
       };
 
       try {
+        const lastDotIndex = file.name.lastIndexOf('.');
         const compressedPhoto = await imageCompression(file, options);
-        const newPhotoName = `${file.name.split('.')[0]}_compressed.webp`;
+        const newPhotoName = `${file.name.substring(0, lastDotIndex)}_compressed.webp`;
         const newPhoto = new File([compressedPhoto], newPhotoName, {
           type: 'image/webp',
           lastModified: Date.now(),
@@ -34,4 +35,10 @@ const PhotoOriginalUrl = (photoFolder: string, photoName: string) =>
 
 const IconUrl = (iconName: string) => `${Url}icons/${iconName}.svg`;
 
-export {ConvertPhotosToWebp, PhotoWebpUrl, PhotoOriginalUrl, IconUrl};
+const GetPhotoExtention = (photoName: string): string => {
+  const parts = photoName.split('.');
+
+  return parts.length > 1 ? parts.pop()! : '';
+};
+
+export {ConvertPhotosToWebp, PhotoWebpUrl, PhotoOriginalUrl, IconUrl, GetPhotoExtention};

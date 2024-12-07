@@ -59,10 +59,12 @@ func (y Yandex) UploadPhoto(fileHeader *multipart.FileHeader, path string) error
 		return err
 	}
 
+	reader := bytes.NewReader(buf.Bytes())
+
 	_, err = client.PutObject(context.TODO(), &s3.PutObjectInput{
 		Bucket: aws.String(y.Bucket),
 		Key:    aws.String(path + fileHeader.Filename),
-		Body:   buf,
+		Body:   reader,
 	})
 
 	if err != nil {

@@ -1,6 +1,7 @@
 import {Transliterate} from '@utils/string';
 import {ConvertPhotosToWebp} from '@utils/photo';
 import {Photosession, PortfolioPhotosession} from '@type/photosession';
+import {Upload} from '../Photo';
 
 const PhotosessionsList = async (): Promise<Photosession[]> => {
   return fetch('/api/photosession/list', {
@@ -32,23 +33,30 @@ const Portfolio = async (): Promise<PortfolioPhotosession[]> => {
 
 const Create = async (title: string, photos: File[]): Promise<boolean> => {
   const formData = new FormData();
-  const convertedPhotos = await ConvertPhotosToWebp(photos);
+  const path = Transliterate(title);
 
-  photos.forEach((photo) => {
+  const slicedPhotos = photos.slice(0, 10);
+  const convertedPhotos = await ConvertPhotosToWebp(slicedPhotos);
+
+  slicedPhotos.forEach((photo) => {
     formData.append('photos', photo);
   });
   convertedPhotos.forEach((convertedPhoto) => {
     formData.append('photosConverted', convertedPhoto as File);
   });
   formData.append('title', title);
-  formData.append('path', Transliterate(title));
+  formData.append('path', path);
 
   return fetch('/api/photosession/create', {
     method: 'POST',
     body: formData,
   }).then(async (response) => {
     if (response.status === 201) {
-      return true;
+      if (photos?.length <= 10) {
+        return true;
+      }
+
+      return await Upload(path, photos.slice(10));
     }
 
     const errorData = await response.json();
