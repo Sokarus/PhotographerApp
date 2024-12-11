@@ -17,6 +17,7 @@ const Photosession: React.FC = () => {
   const [loadedPhotos, setLoadedPhotos] = React.useState<Photo[]>([]);
   const [photoView, setPhotoView] = React.useState<PhotoType>();
   const [currentPhotoIndex, setCurrentPhotoIndex] = React.useState<number>(0);
+  const [headPhoto, setHeadPhoto] = React.useState<PhotoType>();
   const queryParameters = new URLSearchParams(window.location.search);
   const name = queryParameters.get('name');
   const type = window.location.pathname.split('/')?.[1];
@@ -122,7 +123,21 @@ const Photosession: React.FC = () => {
   const findHeadPhoto = React.useCallback(() => {
     return photosession?.photos?.find((photo) => photo.head);
   }, [photosession]);
-  const headPhoto = findHeadPhoto();
+  const findMainPhoto = React.useCallback(() => {
+    return photosession?.photos?.find((photo) => photo.main);
+  }, [photosession]);
+
+  React.useEffect(() => {
+    const updateHeadPhoto = () => {
+      setHeadPhoto(window.innerWidth > window.innerHeight ? findHeadPhoto() : findMainPhoto());
+    };
+
+    window.addEventListener('resize', updateHeadPhoto);
+
+    updateHeadPhoto();
+
+    return () => window.removeEventListener('resize', updateHeadPhoto);
+  }, [photosession]);
 
   if (!photosession) {
     return <></>;
