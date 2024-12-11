@@ -5,6 +5,7 @@ import {toast} from 'react-toastify';
 import {Text, Button} from '@shared';
 import {PhotoWebpUrl, PhotoOriginalUrl} from '@utils/photo';
 import {Photo} from '@type/photo';
+import {Pending} from '@components';
 import './Actions.scss';
 
 interface ActionsProps {
@@ -13,12 +14,15 @@ interface ActionsProps {
 }
 
 const Actions: React.FC<ActionsProps> = ({photos, folderName}) => {
+  const [isPending, setIsPending] = React.useState<boolean>(false);
+
   const handleSave = React.useCallback(
     async (type: string) => {
       if (photos.length < 1) {
         return;
       }
 
+      setIsPending(true);
       const zip = new JSZip();
 
       await Promise.all(
@@ -43,20 +47,24 @@ const Actions: React.FC<ActionsProps> = ({photos, folderName}) => {
 
       zip.generateAsync({type: 'blob'}).then((content) => {
         saveAs(content, `${folderName}.zip`);
+        setIsPending(false);
       });
     },
     [photos]
   );
 
   return (
-    <div className={'ActionsWrapper'}>
-      <Button onClick={() => handleSave('original')} style={'Border'}>
-        <Text text={'Скачать оригиналы'} size={'large'} color={'white'} />
-      </Button>
-      <Button onClick={() => handleSave('webp')} style={'Border'}>
-        <Text text={'Скачать сжатый формат (для интернета)'} size={'large'} color={'white'} />
-      </Button>
-    </div>
+    <>
+      <div className={'ActionsWrapper'}>
+        <Button onClick={() => handleSave('original')} style={'Border'}>
+          <Text text={'Скачать оригиналы'} size={'large'} color={'white'} />
+        </Button>
+        <Button onClick={() => handleSave('webp')} style={'Border'}>
+          <Text text={'Скачать сжатый формат (для интернета)'} size={'large'} color={'white'} />
+        </Button>
+      </div>
+      {isPending && <Pending />}
+    </>
   );
 };
 
