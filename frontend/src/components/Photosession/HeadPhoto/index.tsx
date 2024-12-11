@@ -1,7 +1,7 @@
 import React from 'react';
 import {Text} from '@shared';
-import { Photo } from '@type/photo';
-import {PhotoWebpUrl, PhotoOriginalUrl} from '@utils/photo';
+import {Photo} from '@type/photo';
+import {PhotoOriginalUrl} from '@utils/photo';
 import './HeadPhoto.scss';
 
 interface HeadPhotoProps {
@@ -13,7 +13,7 @@ interface HeadPhotoProps {
 
 const HeadPhoto: React.FC<HeadPhotoProps> = ({photo, folderName, title, date}) => {
   const [imageLoaded, setImageLoaded] = React.useState<boolean>(false);
-  const photoUrl = PhotoWebpUrl(folderName, photo.name);
+  const photoUrl = PhotoOriginalUrl(folderName, photo.name);
 
   React.useEffect(() => {
     const img = new Image();
