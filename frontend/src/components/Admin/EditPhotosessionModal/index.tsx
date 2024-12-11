@@ -81,11 +81,12 @@ const EditPhotosessionModal: React.FC<EditPhotosessionNodalParams> = ({isOpened,
         return;
       }
 
-      if (!photos.filter((photo) => photo.head)) {
+      if (!photos.find((photo) => photo.head)) {
         toast.error('Нужно выбрать титульное фото!');
         return;
       }
-      if (!photos.filter((photo) => photo.main)) {
+
+      if (!photos.find((photo) => photo.main)) {
         toast.error('Нужно выбрать вертикальное фото для портфолио и телефона!');
         return;
       }
