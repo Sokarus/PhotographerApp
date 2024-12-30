@@ -1,0 +1,23 @@
+.Ticket {
+  &Wrapper {
+    display: flex;
+    background-color: black;
+    justify-content: center;
+    height: 100vh;
+    content-visibility: auto;
+  }
+
+  &Content {
+    padding-top: 100px;
+    justify-items: center;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+
+    &Container {
+      width: 400px;
+      display: flex;
+      gap: 30px;
+    }
+  }
+}

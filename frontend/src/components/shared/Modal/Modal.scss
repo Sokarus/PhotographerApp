@@ -48,11 +48,14 @@
           margin-top: 5px;
         }
 
-        div {
+        & > .TextWrapper {
+          text-align: center;
+        }
+
+        & > .ImageButtonWrapper {
           position: absolute;
           right: 10px;
           top: 10px;
-          color: red;
         }
       }
     }

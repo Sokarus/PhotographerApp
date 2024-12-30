@@ -2,11 +2,11 @@
   &Wrapper {
     display: flex;
     flex-direction: row;
+    padding-right: 10px;
   }
 
   &Greeting {
     align-items: center;
-    margin-right: 20px;
     display: flex;
   }
 }

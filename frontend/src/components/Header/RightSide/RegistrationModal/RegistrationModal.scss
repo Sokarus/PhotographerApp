@@ -15,6 +15,11 @@
       width: 260px;
       height: 100px;
       gap: 5px;
+      padding-top: 10px;
+
+      & > .TextWrapper {
+        text-align: center;
+      }
     }
   }
 

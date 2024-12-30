@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import {useTranslation} from 'react-i18next';
 import {Modal, Button, Text} from '@shared';
 import {PhotoOriginalUrl, PhotoWebpUrl} from '@utils/photo';
 import {BaseModal} from '@type/modal';
@@ -16,6 +17,7 @@ const DownloadModal: React.FC<DownloadModalProps> = ({
   photoFolder,
   photoName,
 }) => {
+    const {t} = useTranslation();
   const downloadPhotoContainer = document.getElementById('download-photo-modal');
   const downloadHandler = React.useCallback(
     (e: React.MouseEvent, type: string) => {
@@ -55,10 +57,10 @@ const DownloadModal: React.FC<DownloadModalProps> = ({
     >
       <div className={'DownloadModalWrapper'}>
         <Button onClick={(e: React.MouseEvent) => downloadHandler(e, 'original')} style={'Border'}>
-          <Text text={'Скачать оригинал'} color={'white'} />
+          <Text text={t('cкачать оригинал')} color={'white'} />
         </Button>
         <Button onClick={(e: React.MouseEvent) => downloadHandler(e, 'web')} style={'Border'}>
-          <Text text={'Скачать веб-формат'} color={'white'} />
+          <Text text={t('cкачать сжатый формат (для интернета)')} color={'white'} />
         </Button>
       </div>
     </Modal>,

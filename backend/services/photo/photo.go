@@ -32,6 +32,23 @@ func (ps *PhotoService) CreatePhotos(photos []*multipart.FileHeader, photosessio
 	return nil
 }
 
+func (ps *PhotoService) CreatePhoto(photo *multipart.FileHeader, position int, public bool, photosessionId *int) error {
+	photoData := pModel.Photo{
+		Name:           photo.Filename,
+		Position:       position,
+		Public:         public,
+		PhotosessionId: *photosessionId,
+	}
+
+	err := photoData.Create(ps.DB)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (ps *PhotoService) UpdatePhotos(photos []*pModel.Photo) error {
 	for index, photo := range photos {
 		photoData := pModel.Photo{

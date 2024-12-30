@@ -16,6 +16,10 @@
     width: 60vw;
     height: 80px;
     gap: 5px;
+
+    & > .TextWrapper {
+      text-align: center;
+    }
   }
 
   &ClientLink {

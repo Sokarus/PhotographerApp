@@ -1,4 +1,4 @@
-const Transliterate = (input: string): string => {
+const Transliterate = (input: string, readable: boolean = false): string => {
   const map: {[key: string]: string} = {
     а: 'a',
     б: 'b',
@@ -33,14 +33,16 @@ const Transliterate = (input: string): string => {
     э: 'e',
     ю: 'yu',
     я: 'ya',
-    ' ': '_',
+    ' ': readable ? ' ' : '_',
   };
 
-  return input
+  const result = input
     .toLowerCase()
     .split('')
     .map((char) => (map[char] !== undefined ? map[char] : char))
     .join('');
+
+  return readable ? result.charAt(0).toUpperCase() + result.slice(1) : result;
 };
 
 export {Transliterate};

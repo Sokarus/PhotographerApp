@@ -30,9 +30,9 @@ const Header: React.FC<HeaderProps> = ({color = 'black'}) => {
   }, []);
 
   return windowWidth >= 768 ? (
-    <div className={`HeaderWrapper ${scrolled ? 'Scrolled' : ''}`}>
+    <div className={`HeaderWrapper ${scrolled ? `Scrolled-${color}` : ''}`}>
       <LeftSide color={color} />
-      {localStorage.getItem('needAuth') ? <RightSide color={color} /> : <></>}
+      <RightSide color={color} />
     </div>
   ) : (
     <Accordion />

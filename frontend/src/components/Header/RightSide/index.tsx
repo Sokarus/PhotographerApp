@@ -1,6 +1,7 @@
 import React from 'react';
 import {useSelector, useDispatch} from 'react-redux';
 import {toast} from 'react-toastify';
+import {useTranslation} from 'react-i18next';
 import {TextLink, Text} from '@shared';
 import {RootState} from '@state/index';
 import {Logout} from '@api/User';
@@ -8,12 +9,14 @@ import {setLogin, setRoles} from '@state/User';
 import LoginModal from './LoginModal';
 import RegistrationModal from './RegistrationModal';
 import './RightSide.scss';
+import Language from '../Language';
 
 interface RightSide {
   color: 'black' | 'white';
 }
 
 const RightSide: React.FC<RightSide> = ({color}) => {
+  const {t} = useTranslation();
   const dispatch = useDispatch();
   const [isLoginModalOpened, setIsLoginModalOpened] = React.useState<boolean>(false);
   const [isRegistrationModalOpened, setIsRegistrationModalOpened] = React.useState<boolean>(false);
@@ -33,32 +36,37 @@ const RightSide: React.FC<RightSide> = ({color}) => {
 
   return (
     <div className={'RightSideWrapper'}>
-      {!login ? (
-        <>
-          <TextLink
-            text={'Войти'}
-            onClick={() => setIsLoginModalOpened(true)}
-            textSize={'large'}
-            color={color}
-          />
-          <TextLink
-            text={'Регистрация'}
-            onClick={() => setIsRegistrationModalOpened(true)}
-            textSize={'large'}
-            color={color}
-          />
-          <LoginModal isOpened={isLoginModalOpened} onClose={() => setIsLoginModalOpened(false)} />
-          <RegistrationModal
-            isOpened={isRegistrationModalOpened}
-            onClose={() => setIsRegistrationModalOpened(false)}
-          />
-        </>
-      ) : (
-        <div className={'RightSideGreeting'}>
-          <Text text={`Приветствую, ${login}`} size={'large'} color={color} />
-          <TextLink text={'Выход'} onClick={logoutHandler} textSize={'large'} color={color} />
-        </div>
-      )}
+      {localStorage.getItem('needAuth') &&
+        (!login ? (
+          <>
+            <TextLink
+              text={t('войти')}
+              onClick={() => setIsLoginModalOpened(true)}
+              textSize={'small'}
+              color={color}
+            />
+            <TextLink
+              text={t('регистрация')}
+              onClick={() => setIsRegistrationModalOpened(true)}
+              textSize={'small'}
+              color={color}
+            />
+            <LoginModal
+              isOpened={isLoginModalOpened}
+              onClose={() => setIsLoginModalOpened(false)}
+            />
+            <RegistrationModal
+              isOpened={isRegistrationModalOpened}
+              onClose={() => setIsRegistrationModalOpened(false)}
+            />
+          </>
+        ) : (
+          <div className={'RightSideGreeting'}>
+            <Text text={`Приветствую, ${login}`} size={'small'} color={color} />
+            <TextLink text={'Выход'} onClick={logoutHandler} textSize={'small'} color={color} />
+          </div>
+        ))}
+      <Language />
     </div>
   );
 };

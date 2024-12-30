@@ -2,6 +2,7 @@ import React from 'react';
 import JSZip from 'jszip';
 import {saveAs} from 'file-saver';
 import {toast} from 'react-toastify';
+import {useTranslation} from 'react-i18next';
 import {Text, Button} from '@shared';
 import {PhotoWebpUrl, PhotoOriginalUrl} from '@utils/photo';
 import {Photo} from '@type/photo';
@@ -14,6 +15,7 @@ interface ActionsProps {
 }
 
 const Actions: React.FC<ActionsProps> = ({photos, folderName}) => {
+  const {t} = useTranslation();
   const [isPending, setIsPending] = React.useState<boolean>(false);
 
   const handleSave = React.useCallback(
@@ -57,10 +59,10 @@ const Actions: React.FC<ActionsProps> = ({photos, folderName}) => {
     <>
       <div className={'ActionsWrapper'}>
         <Button onClick={() => handleSave('original')} style={'Border'}>
-          <Text text={'Скачать оригиналы'} size={'large'} color={'white'} />
+          <Text text={t('cкачать оригиналы')} size={'large'} color={'white'} />
         </Button>
         <Button onClick={() => handleSave('webp')} style={'Border'}>
-          <Text text={'Скачать сжатый формат (для интернета)'} size={'large'} color={'white'} />
+          <Text text={t('cкачать сжатый формат (для интернета)')} size={'large'} color={'white'} />
         </Button>
       </div>
       {isPending && <Pending />}

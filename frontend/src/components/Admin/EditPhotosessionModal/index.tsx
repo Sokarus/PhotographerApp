@@ -55,7 +55,7 @@ const EditPhotosessionModal: React.FC<EditPhotosessionNodalParams> = ({isOpened,
       }
 
       setCurrentPhotosession(currentPhotosession);
-      setPhotos([...currentPhotosession.photos] || []);
+      setPhotos([...currentPhotosession.photos]);
       setIsPublish(currentPhotosession.public);
       setIsClient(currentPhotosession.type === 'client');
       setTitle(currentPhotosession.title);
@@ -135,6 +135,7 @@ const EditPhotosessionModal: React.FC<EditPhotosessionNodalParams> = ({isOpened,
           <Select
             options={titles()}
             setOption={(event) => choosePhotosessionHandler(event.target.value)}
+            placeholder={'Выберите фотосессию'}
             current={currentPhotosession?.title}
           />
           {!!photos.length ? (

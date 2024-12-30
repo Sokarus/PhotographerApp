@@ -2,6 +2,8 @@ import React from 'react';
 import {Text} from '@shared';
 import {Photo} from '@type/photo';
 import {PhotoOriginalUrl} from '@utils/photo';
+import {Transliterate} from '@utils/string';
+import useLang from '@hook/Lang';
 import './HeadPhoto.scss';
 
 interface HeadPhotoProps {
@@ -12,6 +14,7 @@ interface HeadPhotoProps {
 }
 
 const HeadPhoto: React.FC<HeadPhotoProps> = ({photo, folderName, title, date}) => {
+  const {lang} = useLang();
   const [imageLoaded, setImageLoaded] = React.useState<boolean>(false);
   const photoUrl = PhotoOriginalUrl(folderName, photo.name);
 
@@ -23,6 +26,10 @@ const HeadPhoto: React.FC<HeadPhotoProps> = ({photo, folderName, title, date}) =
       setImageLoaded(true);
     };
   }, [photoUrl]);
+
+  const getTitle = React.useCallback((): string => {
+    return lang != 'en' ? Transliterate(title, true) : title;
+  }, [lang, useLang]);
 
   return !imageLoaded ? (
     <></>
@@ -36,7 +43,7 @@ const HeadPhoto: React.FC<HeadPhotoProps> = ({photo, folderName, title, date}) =
       className={`HeadPhotoWrapper ${imageLoaded ? 'ImageLoaded' : ''}`}
     >
       <div className={'HeadPhotoTitle'}>
-        <Text text={title} size={'large'} color={'white'} />
+        <Text text={getTitle()} size={'large'} color={'white'} />
         <Text text={date} size={'small'} color={'white'} />
       </div>
     </div>

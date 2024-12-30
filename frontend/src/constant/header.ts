@@ -2,26 +2,30 @@ import {HeaderItem} from '@type/header';
 
 const LeftSideItems: HeaderItem[] = [
   {
-    text: 'Главная',
+    text: 'главная',
     url: '/',
   },
   {
-    text: 'Портфолио',
+    text: 'портфолио',
     url: '/portfolio',
   },
+  // {
+  //   text: 'заявка',
+  //   url: '/ticket',
+  // },
   {
-    text: 'Администрирование',
+    text: 'администрирование',
     url: '/admin',
   },
 ];
 
 const RightSideItems: HeaderItem[] = [
   {
-    text: 'Войти',
+    text: 'войти',
     url: '',
   },
   {
-    text: 'Регистрация',
+    text: 'регистрация',
     url: '',
   },
 ];

@@ -11,7 +11,7 @@ interface IModal {
   backgroundBlur?: number;
   fullWindow?: boolean;
   onClose: () => void;
-  onPressEnter: () => any;
+  onPressEnter?: () => any;
   style?: 'Black' | 'White';
 }
 
@@ -32,7 +32,7 @@ const Modal: React.FC<IModal> = ({
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Enter') {
-        onPressEnter();
+        onPressEnter?.();
       }
     };
 
@@ -48,7 +48,7 @@ const Modal: React.FC<IModal> = ({
       style={
         {
           '--background-blur': backgroundBlur,
-          '--window-wrapper-top': fullWindow ? 0 : '30vh',
+          '--window-wrapper-top': fullWindow ? 0 : '20vh',
         } as any
       }
       className={'ModalWrapper'}

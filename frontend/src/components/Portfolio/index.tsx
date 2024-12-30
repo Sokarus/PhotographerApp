@@ -8,8 +8,6 @@ import './Portfolio.scss';
 
 const Portfolio: React.FC = () => {
   const [photosessions, setPhotosessions] = React.useState<PortfolioPhotosession[]>([]);
-  const queryParameters = new URLSearchParams(window.location.search);
-  const name = queryParameters.get('name');
 
   React.useEffect(() => {
     GetPortfolio()
